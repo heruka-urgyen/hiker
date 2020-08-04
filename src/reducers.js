@@ -1,6 +1,17 @@
-import {createReducer, createAction} from "@reduxjs/toolkit"
+import {createAction} from "@reduxjs/toolkit"
 import {loop, Cmd} from "redux-loop"
 import fs from "fs"
+
+function createReducer(initialState, handlers) {
+  return function reducer(state = initialState, action) {
+    // eslint-disable-next-line
+    if (handlers.hasOwnProperty(action.type)) {
+      return handlers[action.type](state, action)
+    }
+
+    return state
+  }
+}
 
 const toPromise = f => a => (
   new Promise((res, rej) => f(a, (err, fa) => err ? rej(err) : res(fa))))
