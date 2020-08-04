@@ -32,8 +32,16 @@ export async function getPath({path, dir}) {
 export const init = createAction("INIT")
 export const initSuccess = createAction("INIT_SUCCESS")
 export const initFailure = createAction("INIT_FAILURE")
+export const getContentsSuccess = createAction("GET_CONTENTS_SUCCESS")
+export const getContentsFailure = createAction("GET_CONTENTS_FAILURE")
 export const getPathSuccess = createAction("GET_PATH_SUCCESS")
 export const getPathFailure = createAction("GET_PATH_FAILURE")
+
+const runGetContents = args => Cmd.run(getContents, {
+  successActionCreator: getContentsSuccess,
+  failActionCreator: getContentsFailure,
+  args,
+})
 
 const initialState = {}
 const reducer = createReducer(initialState, {
@@ -53,7 +61,13 @@ const reducer = createReducer(initialState, {
       args: [{path: s.currentPath, dir: content}],
     }),
   ),
-  GET_PATH_SUCCESS: (s, {payload}) => ({...s, ...payload}),
+  GET_PATH_SUCCESS: (s, {payload}) => loop(
+    {...s, ...payload},
+    Cmd.list([
+      runGetContents([payload.parentPath]),
+      runGetContents([payload.childPath]),
+    ]),
+  ),
 })
 
 export default reducer
