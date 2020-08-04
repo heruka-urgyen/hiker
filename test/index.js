@@ -4,6 +4,7 @@ import {Cmd, loop} from "redux-loop"
 import reducer, {
   getContents,
   getPath,
+  getChildPath,
 
   init,
   initSuccess,
@@ -13,6 +14,8 @@ import reducer, {
 
   getPathSuccess,
   getPathFailure,
+
+  selectItem,
 } from "../src/reducers"
 
 test("handle INIT", t => {
@@ -84,5 +87,28 @@ test("handle GET_PATH_SUCCESS", t => {
         args: [{path: "/mock/path/file1", key: "childContent"}],
       }),
     ]),
+  ))
+})
+
+test("handle SELECT_ITEM", t => {
+  const r = reducer({
+    currentPath: "/mock/path",
+    parentPath: "/mock",
+    childPath: "/mock/path/file1",
+    currentContent: ["file1", "dir2"]},
+  selectItem({currentSelected: 1}))
+
+  t.deepEqual(r, loop(
+    {
+      currentPath: "/mock/path",
+      parentPath: "/mock",
+      childPath: "/mock/path/file1",
+      currentSelected: 1,
+      currentContent: ["file1", "dir2"]},
+    Cmd.run(getChildPath, {
+      successActionCreator: getPathSuccess,
+      failActionCreator: getPathFailure,
+      args: [{path: "/mock/path", dir: ["file1", "dir2"], selected: 1}],
+    }),
   ))
 })
