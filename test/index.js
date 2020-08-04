@@ -38,3 +38,20 @@ test("handle INIT_SUCCESS", t => {
     }),
   ))
 })
+
+test("handle GET_PATH_SUCCESS", t => {
+  const r = reducer(
+    {currentPath: "/mock/path", currentDir: ["file1", "dir2"]},
+    getPathSuccess({
+      currentPath: "/mock/path",
+      parentPath: "/mock",
+      childPath: "/mock/path/file1"}),
+  )
+
+  t.deepEqual(r,
+    {
+      currentPath: "/mock/path",
+      parentPath: "/mock",
+      childPath: "/mock/path/file1",
+      currentDir: ["file1", "dir2"]})
+})
