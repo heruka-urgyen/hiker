@@ -27,14 +27,20 @@ export async function getContents({path, key}) {
   return {[key]: content}
 }
 
+const getCurrentPath = path => path
+const getParentPath = path => toPromise(fs.realpath)(path)
+  .then(p => p.split("/").slice(0, -1).join("/"))
+const getChildPath = path => dir => el => `${path}/${dir[el]}`
+
 export async function getPath({path, dir, selected}) {
-  const [childPath, parentPath] = await Promise.all([
-    `${path}/${dir[selected]}`,
-    toPromise(fs.realpath)(path).then(p => p.split("/").slice(0, -1).join("/")),
+  const [currentPath, childPath, parentPath] = await Promise.all([
+    getCurrentPath(path),
+    getChildPath(path)(dir)(selected),
+    getParentPath(path),
   ])
 
   return {
-    currentPath: path,
+    currentPath,
     parentPath,
     childPath,
   }
