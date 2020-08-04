@@ -16,7 +16,24 @@ function createReducer(initialState, handlers) {
 const toPromise = f => a => (
   new Promise((res, rej) => f(a, (err, fa) => err ? rej(err) : res(fa))))
 
-export const readDir = toPromise(fs.readdir)
+export const readDir = async path => {
+  try {
+    const dir = await toPromise(fs.readdir)(path)
+
+    if (dir.length === 0) {
+      return "(Empty)"
+    }
+
+    return dir
+  } catch (e) {
+    if (e.code === "EACCES") {
+      return "(Not Accessible)"
+    }
+
+    throw e
+  }
+}
+
 export const readFile = toPromise((path, g) => fs.readFile(path, {encoding: "utf8"}, g))
 export const getStats = toPromise(fs.stat)
 
