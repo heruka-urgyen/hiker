@@ -31,6 +31,15 @@ test("handle INIT", t => {
   ))
 })
 
+test("handle GET_CONTENTS_SUCCESS", t => {
+  const r = reducer(
+    {currentPath: "/mock/path"},
+    getContentsSuccess({currentContent: ["file1", "dir2"]}),
+  )
+
+  t.deepEqual(r, {currentContent: ["file1", "dir2"], currentPath: "/mock/path"})
+})
+
 test("handle INIT_SUCCESS", t => {
   const r = reducer(
     {currentPath: "/mock/path", currentContent: ["file1", "dir2"]},
