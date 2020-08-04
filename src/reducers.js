@@ -16,9 +16,9 @@ function createReducer(initialState, handlers) {
 const toPromise = f => a => (
   new Promise((res, rej) => f(a, (err, fa) => err ? rej(err) : res(fa))))
 
-const readDir = toPromise(fs.readdir)
-const readFile = toPromise((path, g) => fs.readFile(path, {encoding: "utf8"}, g))
-const getStats = toPromise(fs.stat)
+export const readDir = toPromise(fs.readdir)
+export const readFile = toPromise((path, g) => fs.readFile(path, {encoding: "utf8"}, g))
+export const getStats = toPromise(fs.stat)
 
 export async function getContents({path, key}) {
   const stats = await getStats(path)
@@ -27,8 +27,8 @@ export async function getContents({path, key}) {
   return {[key]: content}
 }
 
-const getCurrentPath = path => path
-const getParentPath = path => toPromise(fs.realpath)(path)
+export const getCurrentPath = path => path
+export const getParentPath = path => toPromise(fs.realpath)(path)
   .then(p => p.split("/").slice(0, -1).join("/"))
 export const getChildPath = path => dir => el => `${path}/${dir[el]}`
 
