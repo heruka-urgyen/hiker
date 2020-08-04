@@ -30,7 +30,7 @@ export async function getContents({path, key}) {
 const getCurrentPath = path => path
 const getParentPath = path => toPromise(fs.realpath)(path)
   .then(p => p.split("/").slice(0, -1).join("/"))
-const getChildPath = path => dir => el => `${path}/${dir[el]}`
+export const getChildPath = path => dir => el => `${path}/${dir[el]}`
 
 export async function getPath({path, dir, selected}) {
   const [currentPath, childPath, parentPath] = await Promise.all([
@@ -53,6 +53,7 @@ export const getContentsSuccess = createAction("GET_CONTENTS_SUCCESS")
 export const getContentsFailure = createAction("GET_CONTENTS_FAILURE")
 export const getPathSuccess = createAction("GET_PATH_SUCCESS")
 export const getPathFailure = createAction("GET_PATH_FAILURE")
+export const selectItem = createAction("SELECT_ITEM")
 
 const runGetContents = args => Cmd.run(getContents, {
   successActionCreator: getContentsSuccess,
@@ -85,6 +86,14 @@ const reducer = createReducer(initialState, {
     ]),
   ),
   GET_CONTENTS_SUCCESS: (s, {payload}) => ({...s, ...payload}),
+  SELECT_ITEM: (s, {payload: {currentSelected}}) => loop(
+    {...s, currentSelected},
+    Cmd.run(getChildPath, {
+      successActionCreator: getPathSuccess,
+      failActionCreator: getPathFailure,
+      args: [{path: s.currentPath, dir: s.currentContent, selected: currentSelected}],
+    }),
+  ),
 })
 
 export default reducer
