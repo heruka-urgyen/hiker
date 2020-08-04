@@ -20,11 +20,11 @@ const readDir = toPromise(fs.readdir)
 const readFile = toPromise((path, g) => fs.readFile(path, {encoding: "utf8"}, g))
 const getStats = toPromise(fs.stat)
 
-export async function getContents(path) {
+export async function getContents({path, key}) {
   const stats = await getStats(path)
   const content = stats.isDirectory() ? await readDir(path) : await readFile(path)
 
-  return {content}
+  return {[key]: content}
 }
 
 export async function getPath({path, dir}) {
@@ -58,25 +58,24 @@ const initialState = {}
 const reducer = createReducer(initialState, {
   INIT: (s, {payload: {path}}) => loop(
     {...s, currentPath: path},
-    Cmd.run(getContents, {
-      successActionCreator: initSuccess,
-      failActionCreator: initFailure,
-      args: [path],
-    }),
+    Cmd.list([
+      runGetContents([{path, key: "currentContent"}]),
+      Cmd.action({type: "INIT_SUCCESS"}),
+    ], {sequence: true}),
   ),
-  INIT_SUCCESS: (s, {payload: {content}}) => loop(
-    {...s, currentDir: content},
+  INIT_SUCCESS: s => loop(
+    s,
     Cmd.run(getPath, {
       successActionCreator: getPathSuccess,
       failActionCreator: getPathFailure,
-      args: [{path: s.currentPath, dir: content}],
+      args: [{path: s.currentPath, dir: s.currentContent}],
     }),
   ),
   GET_PATH_SUCCESS: (s, {payload}) => loop(
     {...s, ...payload},
     Cmd.list([
-      runGetContents([payload.parentPath]),
-      runGetContents([payload.childPath]),
+      runGetContents([{path: payload.parentPath, key: "parentContent"}]),
+      runGetContents([{path: payload.childPath, key: "childContent"}]),
     ]),
   ),
 })
