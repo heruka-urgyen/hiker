@@ -78,6 +78,7 @@ const reducer = createReducer(initialState, {
       runGetContents([{path: payload.childPath, key: "childContent"}]),
     ]),
   ),
+  GET_CONTENTS_SUCCESS: (s, {payload}) => ({...s, ...payload}),
 })
 
 export default reducer
