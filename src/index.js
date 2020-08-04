@@ -1,3 +1,5 @@
+import process from "process"
+import store from "./store"
 import {init} from "./reducers"
 
-init({path: "."})
+store.dispatch(init({path: process.cwd()}))
