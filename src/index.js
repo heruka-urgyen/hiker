@@ -1,3 +1,3 @@
 import {init} from "./reducers"
 
-init('.')
+init({path: "."})
