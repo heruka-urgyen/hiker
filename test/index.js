@@ -1,17 +1,40 @@
 import test from "ava"
 import {Cmd, loop} from "redux-loop"
 
-import reducer, {getDir, init, initSuccess, initFailure} from "../src/reducers"
+import reducer, {
+  getDir,
+  getPath,
+
+  init,
+  initSuccess,
+  initFailure,
+
+  getPathSuccess,
+  getPathFailure,
+} from "../src/reducers"
 
 test("handle INIT", t => {
   const r = reducer({}, init({path: "."}))
 
   t.deepEqual(r, loop(
-    {},
+    {currentPath: "."},
     Cmd.run(getDir, {
       successActionCreator: initSuccess,
       failActionCreator: initFailure,
       args: ["."],
+    }),
+  ))
+})
+
+test("handle INIT_SUCCESS", t => {
+  const r = reducer({currentPath: "/mock/path"}, initSuccess({dir: ["file1", "dir2"]}))
+
+  t.deepEqual(r, loop(
+    {currentPath: "/mock/path", currentDir: ["file1", "dir2"]},
+    Cmd.run(getPath, {
+      successActionCreator: getPathSuccess,
+      failActionCreator: getPathFailure,
+      args: [{path: "/mock/path", dir: ["file1", "dir2"]}],
     }),
   ))
 })
