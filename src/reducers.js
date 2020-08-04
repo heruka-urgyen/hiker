@@ -60,8 +60,8 @@ const reducer = createReducer(initialState, {
     {...s, currentPath: path},
     Cmd.list([
       runGetContents([{path, key: "currentContent"}]),
-      Cmd.action({type: "INIT_SUCCESS"}),
-    ], {sequence: true}),
+      Cmd.action({type: "INIT_SUCCESS"})],
+    {sequence: true}),
   ),
   INIT_SUCCESS: s => loop(
     s,
