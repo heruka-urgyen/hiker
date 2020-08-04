@@ -1,6 +1,7 @@
 import test from "ava"
-import reducer, {getDir, init, initSuccess, initFailure} from "../src/reducers"
 import {Cmd, loop} from "redux-loop"
+
+import reducer, {getDir, init, initSuccess, initFailure} from "../src/reducers"
 
 test("handle INIT", t => {
   const r = reducer({}, init({path: "."}))
@@ -11,6 +12,6 @@ test("handle INIT", t => {
       successActionCreator: initSuccess,
       failActionCreator: initFailure,
       args: ["."],
-    })
+    }),
   ))
 })
