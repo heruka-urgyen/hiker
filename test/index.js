@@ -2,7 +2,7 @@ import test from "ava"
 import {Cmd, loop} from "redux-loop"
 
 import reducer, {
-  getDir,
+  getContents,
   getPath,
 
   init,
@@ -18,7 +18,7 @@ test("handle INIT", t => {
 
   t.deepEqual(r, loop(
     {currentPath: "."},
-    Cmd.run(getDir, {
+    Cmd.run(getContents, {
       successActionCreator: initSuccess,
       failActionCreator: initFailure,
       args: ["."],
@@ -27,7 +27,7 @@ test("handle INIT", t => {
 })
 
 test("handle INIT_SUCCESS", t => {
-  const r = reducer({currentPath: "/mock/path"}, initSuccess({dir: ["file1", "dir2"]}))
+  const r = reducer({currentPath: "/mock/path"}, initSuccess({content: ["file1", "dir2"]}))
 
   t.deepEqual(r, loop(
     {currentPath: "/mock/path", currentDir: ["file1", "dir2"]},
