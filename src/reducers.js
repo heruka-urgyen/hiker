@@ -44,6 +44,7 @@ const reducer = createReducer(initialState, {
     failActionCreator: getPathFailure,
     args: [{path: s.currentPath, dir}],
   })),
+  GET_PATH_SUCCESS: (s, {payload}) => ({...s, ...payload}),
 })
 
 export default reducer
