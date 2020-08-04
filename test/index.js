@@ -41,17 +41,18 @@ test("handle GET_CONTENTS_SUCCESS", t => {
 })
 
 test("handle INIT_SUCCESS", t => {
-  const r = reducer(
-    {currentPath: "/mock/path", currentContent: ["file1", "dir2"]},
-    initSuccess(),
-  )
+  const r = reducer({
+    currentPath: "/mock/path",
+    currentContent: ["file1", "dir2"],
+    currentSelected: 0},
+  initSuccess())
 
   t.deepEqual(r, loop(
-    {currentPath: "/mock/path", currentContent: ["file1", "dir2"]},
+    {currentPath: "/mock/path", currentContent: ["file1", "dir2"], currentSelected: 0},
     Cmd.run(getPath, {
       successActionCreator: getPathSuccess,
       failActionCreator: getPathFailure,
-      args: [{path: "/mock/path", dir: ["file1", "dir2"]}],
+      args: [{path: "/mock/path", dir: ["file1", "dir2"], selected: 0}],
     }),
   ))
 })
