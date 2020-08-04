@@ -4,19 +4,28 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently 'parcel watch src/index.js --target node' 'nodemon -q dist/index.js .'",
+    "test": "ava --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@reduxjs/toolkit": "^1.4.0",
+    "esm": "^3.2.25",
     "redux": "^4.0.5",
     "redux-loop": "^6.0.1"
   },
   "devDependencies": {
     "ava": "^3.11.1",
-    "cz-conventional-changelog": "^3.2.0"
+    "concurrently": "^5.2.0",
+    "cz-conventional-changelog": "^3.2.0",
+    "nodemon": "^2.0.4"
+  },
+  "ava": {
+    "require": [
+      "esm"
+    ]
   },
   "config": {
     "commitizen": {
