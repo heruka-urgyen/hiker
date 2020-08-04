@@ -7,7 +7,6 @@ import reducer, {
 
   init,
   initSuccess,
-  initFailure,
 
   getContentsSuccess,
   getContentsFailure,
@@ -21,19 +20,25 @@ test("handle INIT", t => {
 
   t.deepEqual(r, loop(
     {currentPath: "."},
-    Cmd.run(getContents, {
-      successActionCreator: initSuccess,
-      failActionCreator: initFailure,
-      args: ["."],
-    }),
+    Cmd.list([
+      Cmd.run(getContents, {
+        successActionCreator: getContentsSuccess,
+        failActionCreator: getContentsFailure,
+        args: [{path: ".", key: "currentContent"}],
+      }),
+      Cmd.action({type: "INIT_SUCCESS"}),
+    ], {sequence: true}),
   ))
 })
 
 test("handle INIT_SUCCESS", t => {
-  const r = reducer({currentPath: "/mock/path"}, initSuccess({content: ["file1", "dir2"]}))
+  const r = reducer(
+    {currentPath: "/mock/path", currentContent: ["file1", "dir2"]},
+    initSuccess(),
+  )
 
   t.deepEqual(r, loop(
-    {currentPath: "/mock/path", currentDir: ["file1", "dir2"]},
+    {currentPath: "/mock/path", currentContent: ["file1", "dir2"]},
     Cmd.run(getPath, {
       successActionCreator: getPathSuccess,
       failActionCreator: getPathFailure,
@@ -44,7 +49,7 @@ test("handle INIT_SUCCESS", t => {
 
 test("handle GET_PATH_SUCCESS", t => {
   const r = reducer(
-    {currentPath: "/mock/path", currentDir: ["file1", "dir2"]},
+    {currentPath: "/mock/path", currentContent: ["file1", "dir2"]},
     getPathSuccess({
       currentPath: "/mock/path",
       parentPath: "/mock",
@@ -56,17 +61,17 @@ test("handle GET_PATH_SUCCESS", t => {
       currentPath: "/mock/path",
       parentPath: "/mock",
       childPath: "/mock/path/file1",
-      currentDir: ["file1", "dir2"]},
+      currentContent: ["file1", "dir2"]},
     Cmd.list([
       Cmd.run(getContents, {
         successActionCreator: getContentsSuccess,
         failActionCreator: getContentsFailure,
-        args: ["/mock"],
+        args: [{path: "/mock", key: "parentContent"}],
       }),
       Cmd.run(getContents, {
         successActionCreator: getContentsSuccess,
         failActionCreator: getContentsFailure,
-        args: ["/mock/path/file1"],
+        args: [{path: "/mock/path/file1", key: "childContent"}],
       }),
     ]),
   ))
