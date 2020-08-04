@@ -9,6 +9,9 @@ import reducer, {
   initSuccess,
   initFailure,
 
+  getContentsSuccess,
+  getContentsFailure,
+
   getPathSuccess,
   getPathFailure,
 } from "../src/reducers"
@@ -48,10 +51,23 @@ test("handle GET_PATH_SUCCESS", t => {
       childPath: "/mock/path/file1"}),
   )
 
-  t.deepEqual(r,
+  t.deepEqual(r, loop(
     {
       currentPath: "/mock/path",
       parentPath: "/mock",
       childPath: "/mock/path/file1",
-      currentDir: ["file1", "dir2"]})
+      currentDir: ["file1", "dir2"]},
+    Cmd.list([
+      Cmd.run(getContents, {
+        successActionCreator: getContentsSuccess,
+        failActionCreator: getContentsFailure,
+        args: ["/mock"],
+      }),
+      Cmd.run(getContents, {
+        successActionCreator: getContentsSuccess,
+        failActionCreator: getContentsFailure,
+        args: ["/mock/path/file1"],
+      }),
+    ]),
+  ))
 })
