@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently 'parcel watch src/index.js --target node' 'nodemon --watch src --watch test --exec npm run lint' 'nodemon -q dist/index.js .'",
-    "test": "ava --watch",
+    "dev": "concurrently 'parcel watch src/index.js --target node' 'nodemon --watch src --watch test --exec npm run lint' 'nodemon -q dist/index.js .' 'npm run test'",
+    "test": "ava --watch --verbose",
     "lint": "eslint src test .eslintrc.js"
   },
   "keywords": [],
