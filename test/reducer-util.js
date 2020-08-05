@@ -16,10 +16,10 @@ test.afterEach(async _ => {
 
 test("read directory contents", async t => {
   const dir = await getContents({path: "/mock/dir1", key: "testKey"})
-  t.deepEqual(
-    dir.testKey,
-    ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"],
-  )
+  t.deepEqual(dir.testKey, {
+    content: ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"],
+    type: "directory",
+  })
 })
 
 test("try to read non-existent directory", async t => {
@@ -29,27 +29,27 @@ test("try to read non-existent directory", async t => {
 
 test("try to read not allowed directory", async t => {
   const dir = await getContents({path: "/mock/denied", key: "testKey"})
-  t.deepEqual(dir.testKey, "(Not Accessible)")
+  t.deepEqual(dir.testKey, {content: "(Not Accessible)", type: "directory"})
 })
 
 test("read empty dir", async t => {
   const dir = await getContents({path: "/mock/dir1/empty-dir", key: "testKey"})
-  t.deepEqual(dir.testKey, "(Empty)")
+  t.deepEqual(dir.testKey, {content: "(Empty)", type: "directory"})
 })
 
 test("read text file", async t => {
   const file = await getContents({path: "/mock/dir1/text-file.txt", key: "testKey"})
-  t.deepEqual(file.testKey, "text file content")
+  t.deepEqual(file.testKey, {content: "text file content", type: "file"})
 })
 
 test("read empty file", async t => {
   const file = await getContents({path: "/mock/dir1/empty-file.txt", key: "testKey"})
-  t.deepEqual(file.testKey, "(Empty)")
+  t.deepEqual(file.testKey, {content: "(Empty)", type: "file"})
 })
 
 test("try to read not allowed file", async t => {
   const file = await getContents({path: "/mock/file-denied.txt", key: "testKey"})
-  t.deepEqual(file.testKey, "(Not Accessible)")
+  t.deepEqual(file.testKey, {content: "(Not Accessible)", type: "file"})
 })
 
 test("try to read non-existent file", async t => {
@@ -59,14 +59,16 @@ test("try to read non-existent file", async t => {
 
 test("try to read binary file", async t => {
   const file = await getContents({path: "/mock/dir1/file.jpg", key: "testKey"})
-  t.deepEqual(file.testKey, "(Binary)")
+  t.deepEqual(file.testKey, {content: "(Binary)", type: "file"})
 })
 
 test("get contents of a dir", async t => {
   const dir = await getContents({path: "/mock/dir1", key: "testKey"})
   t.deepEqual(dir, {
-    isDirectory: true,
-    testKey: ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"],
+    testKey: {
+      content: ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"],
+      type: "directory",
+    },
   })
 })
 
@@ -74,7 +76,7 @@ test("get contents of a file", async t => {
   const file = await getContents({path: "/mock/dir1/text-file.txt", key: "testKey"})
   t.deepEqual(
     file,
-    {testKey: "text file content", isDirectory: false},
+    {testKey: {content: "text file content", type: "file"}},
   )
 })
 

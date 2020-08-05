@@ -72,7 +72,7 @@ const Main = () => {
   }
 
   const onHighlight = item => {
-    dispatch(selectItem({currentSelected: currentContent.indexOf(item.label)}))
+    dispatch(selectItem({currentSelected: currentContent.content.indexOf(item.label)}))
   }
 
   const mapModel = (data, path) => Array.isArray(data) ?
@@ -85,7 +85,7 @@ const Main = () => {
         <Renderer
           limit={rows}
           initialIndex={parentSelected}
-          data={mapModel(parentContent, parentPath)}
+          data={mapModel(parentContent.content, parentPath)}
           w={w1}
         />
       </Pane>
@@ -95,7 +95,7 @@ const Main = () => {
           limit={rows}
           initialIndex={currentSelected}
           onHighlight={onHighlight}
-          data={mapModel(currentContent, currentPath)}
+          data={mapModel(currentContent.content, currentPath)}
           w={w2}
         />
       </Pane>
@@ -103,7 +103,7 @@ const Main = () => {
         <Renderer
           limit={rows}
           initialIndex={childSelected}
-          data={mapModel(childContent, childPath)}
+          data={mapModel(childContent.content, childPath)}
           w={w3}
         />
       </Pane>

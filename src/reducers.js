@@ -21,13 +21,13 @@ const readDir = async path => {
     const dir = await fs.promises.readdir(path)
 
     if (dir.length === 0) {
-      return "(Empty)"
+      return {type: "directory", content: "(Empty)"}
     }
 
-    return dir
+    return {type: "directory", content: dir}
   } catch (e) {
     if (e.code === "EACCES") {
-      return "(Not Accessible)"
+      return {type: "directory", content: "(Not Accessible)"}
     }
 
     throw e
@@ -37,19 +37,19 @@ const readDir = async path => {
 const readFile = async path => {
   try {
     if (isBinary(path)) {
-      return "(Binary)"
+      return {type: "file", content: "(Binary)"}
     }
 
     const file = await fs.promises.readFile(path, {encoding: "utf8"})
 
     if (file.length === 0) {
-      return "(Empty)"
+      return {type: "file", content: "(Empty)"}
     }
 
-    return file
+    return {type: "file", content: file}
   } catch (e) {
     if (e.code === "EACCES") {
-      return "(Not Accessible)"
+      return {type: "file", content: "(Not Accessible)"}
     }
 
     throw e
@@ -65,7 +65,7 @@ export const getContents = async ({path, key}) => {
   const isDirectory = await isDir(path)
   const content = isDirectory ? await readDir(path) : await readFile(path)
 
-  return {[key]: content, isDirectory}
+  return {[key]: content}
 }
 
 const getCurrentPath = path => ({currentPath: resolve(path)})
@@ -76,7 +76,7 @@ export const getChildPath =
 export const getPath = ({path, dir, selected}) => {
   const [{currentPath}, {childPath}, {parentPath}] = [
     getCurrentPath(path),
-    getChildPath({path, dir, selected}),
+    getChildPath({path, dir: dir.content, selected}),
     getParentPath({path}),
   ]
 
@@ -156,13 +156,13 @@ const reducer = createReducer(initialState, {
     ]))
   },
   GET_CONTENTS_SUCCESS: (s, {payload}) => {
-    const {parentContent, currentContent, childContent, isDirectory} = payload
+    const {parentContent, currentContent, childContent} = payload
 
     if (parentContent) {
       return {
         ...s,
         parentContent,
-        parentSelected: parentContent.indexOf(basename(s.currentPath)),
+        parentSelected: parentContent.content.indexOf(basename(s.currentPath)),
       }
     }
 
@@ -170,14 +170,13 @@ const reducer = createReducer(initialState, {
       return {
         ...s,
         childContent,
-        childContentType: isDirectory ? "directory" : "file",
       }
     }
 
     return {...s, currentContent}
   },
   SELECT_ITEM: (s, {payload: {currentSelected}}) => {
-    const {childPath} = getChildPath({
+    const {childPath} = getPath({
       path: s.currentPath,
       dir: s.currentContent,
       selected: currentSelected,
@@ -202,10 +201,10 @@ const reducer = createReducer(initialState, {
     path: getParentPath({path: s.parentPath}).parentPath,
     key: "parentContent"}])),
   GO_FORWARD: s => {
-    const isDirectory = s.childContentType === "directory"
+    const isDirectory = s.childContent.type === "directory"
 
     if (isDirectory) {
-      const {childPath} = getChildPath({
+      const {childPath} = getPath({
         path: s.childPath,
         dir: s.childContent,
         selected: s.childSelected,

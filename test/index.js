@@ -38,11 +38,11 @@ test("handle INIT", t => {
 test("handle current GET_CONTENTS_SUCCESS", t => {
   const r = reducer(
     {currentPath: "/mock/path"},
-    getContentsSuccess({currentContent: ["file1", "dir2"], isDirectory: true}),
+    getContentsSuccess({currentContent: {content: ["file1", "dir2"], type: "directory"}}),
   )
 
   t.deepEqual(r, {
-    currentContent: ["file1", "dir2"],
+    currentContent: {content: ["file1", "dir2"], type: "directory"},
     currentPath: "/mock/path",
   })
 })
@@ -50,14 +50,16 @@ test("handle current GET_CONTENTS_SUCCESS", t => {
 test("handle parent GET_CONTENTS_SUCCESS", t => {
   const r = reducer(
     {currentPath: "/mock/path", currentContent: ["file1", "dir2"], parentPath: "/mock"},
-    getContentsSuccess({parentContent: ["path0", "path", "path1"], isDirectory: true}),
+    getContentsSuccess({
+      parentContent: {content: ["path0", "path", "path1"], type: "directory"},
+    }),
   )
 
   t.deepEqual(r, {
     currentContent: ["file1", "dir2"],
     currentPath: "/mock/path",
     parentPath: "/mock",
-    parentContent: ["path0", "path", "path1"],
+    parentContent: {content: ["path0", "path", "path1"], type: "directory"},
     parentSelected: 1,
   })
 })
@@ -65,22 +67,21 @@ test("handle parent GET_CONTENTS_SUCCESS", t => {
 test("handle child GET_CONTENTS_SUCCESS", t => {
   const r = reducer(
     {currentPath: "/mock/path", currentContent: ["file1", "dir2"], parentPath: "/mock"},
-    getContentsSuccess({childContent: ["file1", "file2"], isDirectory: true}),
+    getContentsSuccess({childContent: {content: ["file1", "file2"], type: "directory"}}),
   )
 
   t.deepEqual(r, {
     currentContent: ["file1", "dir2"],
     currentPath: "/mock/path",
     parentPath: "/mock",
-    childContent: ["file1", "file2"],
-    childContentType: "directory",
+    childContent: {content: ["file1", "file2"], type: "directory"},
   })
 })
 
 test("handle INIT_SUCCESS", t => {
   const r = reducer({
     currentPath: "/mock/path",
-    currentContent: ["file1", "dir2"],
+    currentContent: {content: ["file1", "dir2"], type: "directory"},
     currentSelected: 0},
   initSuccess())
 
@@ -88,7 +89,7 @@ test("handle INIT_SUCCESS", t => {
     childPath: "/mock/path/file1",
     parentPath: "/mock",
     currentPath: "/mock/path",
-    currentContent: ["file1", "dir2"],
+    currentContent: {content: ["file1", "dir2"], type: "directory"},
     currentSelected: 0,
   }, Cmd.list([
     Cmd.run(getContents, {
@@ -109,7 +110,7 @@ test("handle SELECT_ITEM", t => {
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: ["file1", "dir2"]},
+    currentContent: {content: ["file1", "dir2"], type: "directory"}},
   selectItem({currentSelected: 1}))
 
   t.deepEqual(r, loop(
@@ -118,7 +119,7 @@ test("handle SELECT_ITEM", t => {
       parentPath: "/mock",
       childPath: "/mock/path/dir2",
       currentSelected: 1,
-      currentContent: ["file1", "dir2"]},
+      currentContent: {content: ["file1", "dir2"], type: "directory"}},
     Cmd.run(getContents, {
       successActionCreator: getContentsSuccess,
       failActionCreator: getContentsFailure,
@@ -132,9 +133,9 @@ test("handle GO_BACK", t => {
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: ["file1", "dir2"],
-    parentContent: ["path0", "path"],
-    childContent: ["dir1", "dir2"],
+    currentContent: {content: ["file1", "dir2"], type: "directory"},
+    parentContent: {content: ["path0", "path"], type: "directory"},
+    childContent: {content: ["dir1", "dir2"], type: "directory"},
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
@@ -143,12 +144,12 @@ test("handle GO_BACK", t => {
   t.deepEqual(r, loop({
     childPath: "/mock/path",
     currentPath: "/mock",
-    childContent: ["file1", "dir2"],
-    currentContent: ["path0", "path"],
+    childContent: {content: ["file1", "dir2"], type: "directory"},
+    currentContent: {content: ["path0", "path"], type: "directory"},
     currentSelected: 1,
     childSelected: 0,
     parentPath: "/",
-    parentContent: ["path0", "path"],
+    parentContent: {content: ["path0", "path"], type: "directory"},
     parentSelected: 1,
   }, Cmd.run(getContents, {
     successActionCreator: getContentsSuccess,
@@ -162,9 +163,9 @@ test("handle GO_FORWARD to dir", t => {
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/dir1",
-    currentContent: ["file1", "dir2"],
-    parentContent: ["path0", "path"],
-    childContent: ["dir1", "dir2"],
+    currentContent: {content: ["file1", "dir2"], type: "directory"},
+    parentContent: {content: ["path0", "path"], type: "directory"},
+    childContent: {content: ["dir1", "dir2"], type: "directory"},
     currentSelected: 1,
     parentSelected: 1,
     childSelected: 0,
@@ -175,9 +176,9 @@ test("handle GO_FORWARD to dir", t => {
     currentPath: "/mock/path/dir1",
     parentPath: "/mock/path",
     childPath: "/mock/path/dir1/dir1",
-    currentContent: ["dir1", "dir2"],
-    parentContent: ["file1", "dir2"],
-    childContent: ["dir1", "dir2"],
+    currentContent: {content: ["dir1", "dir2"], type: "directory"},
+    parentContent: {content: ["file1", "dir2"], type: "directory"},
+    childContent: {content: ["dir1", "dir2"], type: "directory"},
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
@@ -194,26 +195,24 @@ test("handle GO_FORWARD to file", t => {
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: ["file1", "dir2"],
-    parentContent: ["path0", "path"],
-    childContent: ["dir1", "dir2"],
+    currentContent: {content: ["file1", "dir2"], type: "directory"},
+    parentContent: {content: ["path0", "path"], type: "directory"},
+    childContent: {content: "file content", type: "file"},
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
-    currentContentType: "file",
   }, goForward())
 
   t.deepEqual(r, loop({
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: ["file1", "dir2"],
-    parentContent: ["path0", "path"],
-    childContent: ["dir1", "dir2"],
+    currentContent: {content: ["file1", "dir2"], type: "directory"},
+    parentContent: {content: ["path0", "path"], type: "directory"},
+    childContent: {content: "file content", type: "file"},
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
-    currentContentType: "file",
   }, Cmd.run(openFile, {
     successActionCreator: openFileSuccess,
     failActionCreator: openFileFailure,
