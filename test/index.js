@@ -6,6 +6,7 @@ import reducer, {
   getPath,
   getChildPath,
   getParentPath,
+  openFile,
 
   init,
   initSuccess,
@@ -14,10 +15,14 @@ import reducer, {
   getContentsFailure,
 
   getPathSuccess,
-  getPathFailure,
 
+  getPathFailure,
   selectItem,
   goBack,
+  goForward,
+
+  openFileSuccess,
+  openFileFailure,
 } from "../src/reducers"
 
 test("handle INIT", t => {
@@ -161,5 +166,69 @@ test("handle GO_BACK", t => {
     successActionCreator: getPathSuccess,
     failActionCreator: getPathFailure,
     args: [{path: "/mock/path"}],
+  })))
+})
+
+test("handle GO_FORWARD to dir", t => {
+  const r = reducer({
+    currentPath: "/mock/path",
+    parentPath: "/mock",
+    childPath: "/mock/path/dir1",
+    currentContent: ["file1", "dir2"],
+    parentContent: ["path0", "path"],
+    childContent: ["dir1", "dir2"],
+    currentSelected: 1,
+    parentSelected: 1,
+    childSelected: 0,
+    currentContentType: "directory",
+  }, goForward())
+
+  t.deepEqual(r, loop({
+    currentPath: "/mock/path/dir1",
+    parentPath: "/mock/path",
+    childPath: "/mock/path/dir1",
+    currentContent: ["dir1", "dir2"],
+    parentContent: ["file1", "dir2"],
+    childContent: ["dir1", "dir2"],
+    currentSelected: 0,
+    parentSelected: 1,
+    childSelected: 0,
+    currentContentType: "directory",
+  }, Cmd.run(getChildPath, {
+    successActionCreator: getPathSuccess,
+    failActionCreator: getPathFailure,
+    args: [{path: "/mock/path/dir1", dir: ["dir1", "dir2"], selected: 0}],
+  })))
+})
+
+test("handle GO_FORWARD to file", t => {
+  const r = reducer({
+    currentPath: "/mock/path",
+    parentPath: "/mock",
+    childPath: "/mock/path/file1",
+    currentContent: ["file1", "dir2"],
+    parentContent: ["path0", "path"],
+    childContent: ["dir1", "dir2"],
+    currentSelected: 0,
+    parentSelected: 1,
+    childSelected: 0,
+    currentContentType: "file",
+  }, goForward())
+
+  t.deepEqual(r, loop({
+    currentPath: "/mock/path",
+    parentPath: "/mock",
+    childPath: "/mock/path/file1",
+    currentContent: ["file1", "dir2"],
+    parentContent: ["path0", "path"],
+    childContent: ["dir1", "dir2"],
+    currentSelected: 0,
+    parentSelected: 1,
+    childSelected: 0,
+    currentContentType: "file",
+  }, Cmd.run(openFile, {
+    successActionCreator: openFileSuccess,
+    failActionCreator: openFileFailure,
+    args: [{filePath: "/mock/path/file1"}],
   })))
 })
