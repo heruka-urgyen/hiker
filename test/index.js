@@ -3,8 +3,6 @@ import {Cmd, loop} from "redux-loop"
 
 import reducer, {
   getContents,
-  getChildPath,
-  getParentPath,
   openFile,
 
   init,
@@ -13,9 +11,6 @@ import reducer, {
   getContentsSuccess,
   getContentsFailure,
 
-  getPathSuccess,
-
-  getPathFailure,
   selectItem,
   goBack,
   goForward,
@@ -108,36 +103,6 @@ test("handle INIT_SUCCESS", t => {
     }),
   ])))
 })
-
-// test("handle GET_PATH_SUCCESS", t => {
-//   const r = reducer(
-//     {currentPath: "/mock/path", currentContent: ["file1", "dir2"]},
-//     getPathSuccess({
-//       currentPath: "/mock/path",
-//       parentPath: "/mock",
-//       childPath: "/mock/path/file1"}),
-//   )
-//
-//   t.deepEqual(r, loop(
-//     {
-//       currentPath: "/mock/path",
-//       parentPath: "/mock",
-//       childPath: "/mock/path/file1",
-//       currentContent: ["file1", "dir2"]},
-//     Cmd.list([
-//       Cmd.run(getContents, {
-//         successActionCreator: getContentsSuccess,
-//         failActionCreator: getContentsFailure,
-//         args: [{path: "/mock", key: "parentContent"}],
-//       }),
-//       Cmd.run(getContents, {
-//         successActionCreator: getContentsSuccess,
-//         failActionCreator: getContentsFailure,
-//         args: [{path: "/mock/path/file1", key: "childContent"}],
-//       }),
-//     ]),
-//   ))
-// })
 
 test("handle SELECT_ITEM", t => {
   const r = reducer({
