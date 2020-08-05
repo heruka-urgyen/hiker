@@ -1,7 +1,7 @@
 import {createAction} from "@reduxjs/toolkit"
 import {loop, Cmd} from "redux-loop"
 import fs from "fs"
-import {resolve, dirname} from "path"
+import {basename, resolve, dirname} from "path"
 import {isBinary} from "istextorbinary"
 
 function createReducer(initialState, handlers) {
@@ -121,7 +121,21 @@ const reducer = createReducer(initialState, {
       runGetContents([{path: payload.childPath, key: "childContent"}]),
     ]),
   ),
-  GET_CONTENTS_SUCCESS: (s, {payload}) => ({...s, ...payload}),
+  GET_CONTENTS_SUCCESS: (s, {payload}) => {
+    const {parentContent} = payload
+    if (parentContent) {
+      return {
+        ...s,
+        ...payload,
+        parentSelected: parentContent.indexOf(basename(s.currentPath)),
+      }
+    }
+
+    return {
+      ...s,
+      ...payload,
+    }
+  },
   SELECT_ITEM: (s, {payload: {currentSelected}}) => loop(
     {...s, currentSelected},
     Cmd.run(getChildPath, {
