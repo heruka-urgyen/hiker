@@ -34,13 +34,28 @@ test("handle INIT", t => {
   ))
 })
 
-test("handle GET_CONTENTS_SUCCESS", t => {
+test("handle current GET_CONTENTS_SUCCESS", t => {
   const r = reducer(
     {currentPath: "/mock/path"},
     getContentsSuccess({currentContent: ["file1", "dir2"]}),
   )
 
   t.deepEqual(r, {currentContent: ["file1", "dir2"], currentPath: "/mock/path"})
+})
+
+test("handle parent GET_CONTENTS_SUCCESS", t => {
+  const r = reducer(
+    {currentPath: "/mock/path", currentContent: ["file1", "dir2"], parentPath: "/mock"},
+    getContentsSuccess({parentContent: ["path0", "path", "path1"]}),
+  )
+
+  t.deepEqual(r, {
+    currentContent: ["file1", "dir2"],
+    currentPath: "/mock/path",
+    parentPath: "/mock",
+    parentContent: ["path0", "path", "path1"],
+    parentSelected: 1,
+  })
 })
 
 test("handle INIT_SUCCESS", t => {
