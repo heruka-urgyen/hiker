@@ -140,25 +140,23 @@ const reducer = createReducer(initialState, {
       Cmd.action({type: "INIT_SUCCESS"})],
     {sequence: true}),
   ),
-  INIT_SUCCESS: s => loop(
-    s,
-    Cmd.run(getPath, {
-      successActionCreator: getPathSuccess,
-      failActionCreator: getPathFailure,
-      args: [{path: s.currentPath, dir: s.currentContent, selected: s.currentSelected}],
-    }),
-  ),
-  GET_PATH_SUCCESS: (s, {payload}) => loop(
-    {...s, ...payload},
-    Cmd.list([
-      payload.parentPath ?
-        runGetContents([{path: payload.parentPath, key: "parentContent"}]) :
-        Cmd.none,
-      payload.childPath ?
-        runGetContents([{path: payload.childPath, key: "childContent"}]) :
-        Cmd.none,
-    ]),
-  ),
+  INIT_SUCCESS: s => {
+    const {
+      currentPath,
+      parentPath,
+      childPath,
+    } = getPath({path: s.currentPath, dir: s.currentContent, selected: s.currentSelected})
+
+    return loop({
+      ...s,
+      currentPath,
+      parentPath,
+      childPath,
+    }, Cmd.list([
+      runGetContents([{path: parentPath, key: "parentContent"}]),
+      runGetContents([{path: childPath, key: "childContent"}]),
+    ]))
+  },
   GET_CONTENTS_SUCCESS: (s, {payload}) => {
     const {parentContent, currentContent, childContent, isDirectory} = payload
 
