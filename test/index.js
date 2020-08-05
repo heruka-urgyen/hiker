@@ -179,7 +179,7 @@ test("handle GO_BACK", t => {
   }, Cmd.run(getParentPath, {
     successActionCreator: getPathSuccess,
     failActionCreator: getPathFailure,
-    args: [{path: "/mock/path"}],
+    args: [{path: "/mock"}],
   })))
 })
 

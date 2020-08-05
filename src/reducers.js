@@ -131,6 +131,7 @@ const initialState = {
   currentContent: [],
   childContent: [],
 }
+
 const reducer = createReducer(initialState, {
   INIT: (s, {payload: {path}}) => loop(
     {...s, currentPath: path},
@@ -198,7 +199,7 @@ const reducer = createReducer(initialState, {
   }, Cmd.run(getParentPath, {
     successActionCreator: getPathSuccess,
     failActionCreator: getPathFailure,
-    args: [{path: s.currentPath}],
+    args: [{path: s.parentPath}],
   })),
   GO_FORWARD: s => {
     const isDirectory = s.childContentType === "directory"
