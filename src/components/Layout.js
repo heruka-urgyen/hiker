@@ -4,13 +4,13 @@ import React from "react"
 import {Box, useInput} from "ink"
 import PropTypes from "prop-types"
 
-const Pane = React.forwardRef(({children, ...props}, ref) => (
+export const Pane = React.forwardRef(({children, ...props}, ref) => (
   <Box flexGrow={1} ref={ref} {...props}>
     {children}
   </Box>
 ))
 
-const Layout = ({children, onMoveLeft, onMoveRight, ...props}) => {
+export const Layout = ({children, onMoveLeft, onMoveRight, ...props}) => {
   useInput((input, _) => {
     if (input === "l") {
       onMoveRight()
@@ -37,5 +37,3 @@ Layout.propTypes = {
   onMoveLeft: PropTypes.func.isRequired,
   onMoveRight: PropTypes.func.isRequired,
 }
-
-export default {Layout, Pane}
