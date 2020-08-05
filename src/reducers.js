@@ -69,7 +69,7 @@ export const getContents = async ({path, key}) => {
 }
 
 const getCurrentPath = path => ({currentPath: resolve(path)})
-export const getParentPath = path => ({parentPath: dirname(resolve(path))})
+export const getParentPath = ({path}) => ({parentPath: dirname(resolve(path))})
 export const getChildPath =
   ({path, dir, selected}) => ({childPath: resolve(path, dir[selected])})
 
@@ -77,7 +77,7 @@ export const getPath = ({path, dir, selected}) => {
   const [{currentPath}, {childPath}, {parentPath}] = [
     getCurrentPath(path),
     getChildPath({path, dir, selected}),
-    getParentPath(path),
+    getParentPath({path}),
   ]
 
   return {
