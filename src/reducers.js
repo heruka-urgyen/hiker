@@ -68,13 +68,15 @@ export const getContents = async ({path, key}) => {
   return {[key]: content, isDirectory}
 }
 
-const getCurrentPath = resolve
-export const getParentPath = path => dirname(resolve(path))
-export const getChildPath = path => dir => el => resolve(path, dir[el])
+const getCurrentPath = path => ({currentPath: resolve(path)})
+export const getParentPath = path => ({parentPath: dirname(resolve(path))})
+export const getChildPath =
+  ({path, dir, selected}) => ({childPath: resolve(path, dir[selected])})
+
 export const getPath = ({path, dir, selected}) => {
-  const [currentPath, childPath, parentPath] = [
+  const [{currentPath}, {childPath}, {parentPath}] = [
     getCurrentPath(path),
-    getChildPath(path)(dir)(selected),
+    getChildPath({path, dir, selected}),
     getParentPath(path),
   ]
 
@@ -148,8 +150,12 @@ const reducer = createReducer(initialState, {
   GET_PATH_SUCCESS: (s, {payload}) => loop(
     {...s, ...payload},
     Cmd.list([
-      runGetContents([{path: payload.parentPath, key: "parentContent"}]),
-      runGetContents([{path: payload.childPath, key: "childContent"}]),
+      payload.parentPath ?
+        runGetContents([{path: payload.parentPath, key: "parentContent"}]) :
+        Cmd.none,
+      payload.childPath ?
+        runGetContents([{path: payload.childPath, key: "childContent"}]) :
+        Cmd.none,
     ]),
   ),
   GET_CONTENTS_SUCCESS: (s, {payload}) => {
