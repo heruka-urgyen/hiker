@@ -72,12 +72,12 @@ const Main = () => {
   }
 
   const onHighlight = item => {
-    dispatch(selectItem({currentSelected: item}))
+    dispatch(selectItem({currentSelected: currentContent.indexOf(item.label)}))
   }
 
-  const mapModel = (data, path) => data.map(
-    label => ({label, path, value: `${path}/${label}`}),
-  )
+  const mapModel = (data, path) => Array.isArray(data) ?
+    data.map(label => ({label, path, value: `${path}/${label}`})) :
+    data
 
   return (
     <Layout height={10} onMoveLeft={onMoveLeft} onMoveRight={onMoveRight}>
@@ -121,7 +121,10 @@ Renderer.defaultProps = {
 
 Renderer.propTypes = {
   w: PropTypes.number,
-  data: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.object])).isRequired,
+  data: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.object])),
+    PropTypes.string,
+  ]).isRequired,
   limit: PropTypes.number,
   isFocused: PropTypes.bool,
   onHighlight: PropTypes.func,
