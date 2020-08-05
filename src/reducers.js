@@ -1,6 +1,7 @@
 import {createAction} from "@reduxjs/toolkit"
 import {loop, Cmd} from "redux-loop"
 import fs from "fs"
+import {spawn} from "child_process"
 import {basename, resolve, dirname} from "path"
 import {isBinary} from "istextorbinary"
 
@@ -84,6 +85,24 @@ export const getPath = ({path, dir, selected}) => {
   }
 }
 
+const open = (app, path) => new Promise((res, rej) => {
+  const c = spawn(app, [path], {stdio: "inherit", env: process.env})
+  c.on("exit", res)
+  c.on("error", rej)
+})
+
+export const openFile = async filePath => {
+  process.stdin.pause()
+
+  if (isBinary(filePath)) {
+    await open("xdg-open", filePath)
+  } else {
+    await open("vim", filePath)
+  }
+
+  process.stdin.resume()
+}
+
 export const init = createAction("INIT")
 export const initSuccess = createAction("INIT_SUCCESS")
 export const initFailure = createAction("INIT_FAILURE")
@@ -93,6 +112,9 @@ export const getPathSuccess = createAction("GET_PATH_SUCCESS")
 export const getPathFailure = createAction("GET_PATH_FAILURE")
 export const selectItem = createAction("SELECT_ITEM")
 export const goBack = createAction("GO_BACK")
+export const goForward = createAction("GO_FORWARD")
+export const openFileSuccess = createAction("OPEN_FILE_SUCCESS")
+export const openFileFailure = createAction("OPEN_FILE_FAILURE")
 
 const runGetContents = args => Cmd.run(getContents, {
   successActionCreator: getContentsSuccess,
@@ -166,6 +188,31 @@ const reducer = createReducer(initialState, {
     failActionCreator: getPathFailure,
     args: [{path: s.currentPath}],
   })),
+  GO_FORWARD: s => {
+    const isDirectory = s.currentContentType === "directory"
+
+    if (isDirectory) {
+      return loop({
+        ...s,
+        currentPath: s.childPath,
+        currentContent: s.childContent,
+        currentSelected: s.childSelected,
+        parentPath: s.currentPath,
+        parentContent: s.currentContent,
+        parentSelected: s.currentSelected,
+      }, Cmd.run(getChildPath, {
+        successActionCreator: getPathSuccess,
+        failActionCreator: getPathFailure,
+        args: [{path: s.childPath, dir: s.childContent, selected: s.childSelected}],
+      }))
+    }
+
+    return loop(s, Cmd.run(openFile, {
+      successActionCreator: openFileSuccess,
+      failActionCreator: openFileFailure,
+      args: [{filePath: s.childPath}],
+    }))
+  },
 })
 
 export default reducer
