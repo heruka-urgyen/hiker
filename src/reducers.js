@@ -55,19 +55,21 @@ const readFile = async path => {
   }
 }
 
-const getStats = fs.promises.stat
+const isDir = async path => {
+  const stats = await fs.promises.stat(path)
+  return stats.isDirectory()
+}
 
 export const getContents = async ({path, key}) => {
-  const stats = await getStats(path)
-  const content = stats.isDirectory() ? await readDir(path) : await readFile(path)
+  const isDirectory = await isDir(path)
+  const content = isDirectory ? await readDir(path) : await readFile(path)
 
-  return {[key]: content}
+  return {[key]: content, isDirectory}
 }
 
 const getCurrentPath = resolve
 export const getParentPath = path => dirname(resolve(path))
 export const getChildPath = path => dir => el => resolve(path, dir[el])
-
 export const getPath = ({path, dir, selected}) => {
   const [currentPath, childPath, parentPath] = [
     getCurrentPath(path),
@@ -123,19 +125,25 @@ const reducer = createReducer(initialState, {
     ]),
   ),
   GET_CONTENTS_SUCCESS: (s, {payload}) => {
-    const {parentContent} = payload
+    const {parentContent, currentContent, childContent, isDirectory} = payload
+
     if (parentContent) {
       return {
         ...s,
-        ...payload,
+        parentContent,
         parentSelected: parentContent.indexOf(basename(s.currentPath)),
       }
     }
 
-    return {
-      ...s,
-      ...payload,
+    if (currentContent) {
+      return {
+        ...s,
+        currentContent,
+        currentContentType: isDirectory ? "directory" : "file",
+      }
     }
+
+    return {...s, childContent}
   },
   SELECT_ITEM: (s, {payload: {currentSelected}}) => loop(
     {...s, currentSelected},
