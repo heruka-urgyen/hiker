@@ -151,13 +151,13 @@ test("handle SELECT_ITEM", t => {
     {
       currentPath: "/mock/path",
       parentPath: "/mock",
-      childPath: "/mock/path/file1",
+      childPath: "/mock/path/dir2",
       currentSelected: 1,
       currentContent: ["file1", "dir2"]},
-    Cmd.run(getChildPath, {
-      successActionCreator: getPathSuccess,
-      failActionCreator: getPathFailure,
-      args: [{path: "/mock/path", dir: ["file1", "dir2"], selected: 1}],
+    Cmd.run(getContents, {
+      successActionCreator: getContentsSuccess,
+      failActionCreator: getContentsFailure,
+      args: [{path: "/mock/path/dir2", key: "childContent"}],
     }),
   ))
 })

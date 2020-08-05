@@ -178,14 +178,19 @@ const reducer = createReducer(initialState, {
 
     return {...s, currentContent}
   },
-  SELECT_ITEM: (s, {payload: {currentSelected}}) => loop(
-    {...s, currentSelected},
-    Cmd.run(getChildPath, {
-      successActionCreator: getPathSuccess,
-      failActionCreator: getPathFailure,
-      args: [{path: s.currentPath, dir: s.currentContent, selected: currentSelected}],
-    }),
-  ),
+  SELECT_ITEM: (s, {payload: {currentSelected}}) => {
+    const {childPath} = getChildPath({
+      path: s.currentPath,
+      dir: s.currentContent,
+      selected: currentSelected,
+    })
+
+    return loop({
+      ...s,
+      childPath,
+      currentSelected,
+    }, runGetContents([{path: childPath, key: "childContent"}]))
+  },
   GO_BACK: s => loop({
     ...s,
     currentPath: s.parentPath,
