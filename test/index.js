@@ -209,7 +209,7 @@ test("handle GO_FORWARD to dir", t => {
   t.deepEqual(r, loop({
     currentPath: "/mock/path/dir1",
     parentPath: "/mock/path",
-    childPath: "/mock/path/dir1",
+    childPath: "/mock/path/dir1/dir1",
     currentContent: ["dir1", "dir2"],
     parentContent: ["file1", "dir2"],
     childContent: ["dir1", "dir2"],
@@ -217,10 +217,10 @@ test("handle GO_FORWARD to dir", t => {
     parentSelected: 1,
     childSelected: 0,
     childContentType: "directory",
-  }, Cmd.run(getChildPath, {
-    successActionCreator: getPathSuccess,
-    failActionCreator: getPathFailure,
-    args: [{path: "/mock/path/dir1", dir: ["dir1", "dir2"], selected: 0}],
+  }, Cmd.run(getContents, {
+    successActionCreator: getContentsSuccess,
+    failActionCreator: getContentsFailure,
+    args: [{path: "/mock/path/dir1/dir1", key: "childContent"}],
   })))
 })
 

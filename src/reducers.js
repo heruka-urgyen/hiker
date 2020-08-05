@@ -207,6 +207,12 @@ const reducer = createReducer(initialState, {
     const isDirectory = s.childContentType === "directory"
 
     if (isDirectory) {
+      const {childPath} = getChildPath({
+        path: s.childPath,
+        dir: s.childContent,
+        selected: s.childSelected,
+      })
+
       return loop({
         ...s,
         currentPath: s.childPath,
@@ -215,11 +221,8 @@ const reducer = createReducer(initialState, {
         parentPath: s.currentPath,
         parentContent: s.currentContent,
         parentSelected: s.currentSelected,
-      }, Cmd.run(getChildPath, {
-        successActionCreator: getPathSuccess,
-        failActionCreator: getPathFailure,
-        args: [{path: s.childPath, dir: s.childContent, selected: s.childSelected}],
-      }))
+        childPath,
+      }, runGetContents([{path: childPath, key: "childContent"}]))
     }
 
     return loop(s, Cmd.run(openFile, {
