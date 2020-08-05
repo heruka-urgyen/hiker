@@ -33,7 +33,10 @@ Pane.propTypes = {
 }
 
 Layout.propTypes = {
-  children: PropTypes.element.isRequired,
   onMoveLeft: PropTypes.func.isRequired,
   onMoveRight: PropTypes.func.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
 }
