@@ -14,6 +14,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.4.0",
     "esm": "^3.2.25",
+    "istextorbinary": "^5.9.0",
     "redux": "^4.0.5",
     "redux-loop": "^6.0.1"
   },
