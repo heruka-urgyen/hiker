@@ -1,6 +1,7 @@
 import {createAction} from "@reduxjs/toolkit"
 import {loop, Cmd} from "redux-loop"
 import fs from "fs"
+import {isBinary} from "istextorbinary"
 
 function createReducer(initialState, handlers) {
   return function reducer(state = initialState, action) {
@@ -34,7 +35,28 @@ export const readDir = async path => {
   }
 }
 
-export const readFile = toPromise((path, g) => fs.readFile(path, {encoding: "utf8"}, g))
+export const readFile = async path => {
+  try {
+    if (isBinary(path)) {
+      return "(Binary)"
+    }
+
+    const file = await toPromise((p, g) => fs.readFile(p, {encoding: "utf8"}, g))(path)
+
+    if (file.length === 0) {
+      return "(Empty)"
+    }
+
+    return file
+  } catch (e) {
+    if (e.code === "EACCES") {
+      return "(Not Accessible)"
+    }
+
+    throw e
+  }
+}
+
 export const getStats = toPromise(fs.stat)
 
 export async function getContents({path, key}) {
