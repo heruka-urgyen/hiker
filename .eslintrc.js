@@ -30,6 +30,7 @@ module.exports = {
       vars: "all",
       args: "after-used",
       ignoreRestSiblings: false,
+      varsIgnorePattern: "_",
       argsIgnorePattern: "_",
     }],
     quotes: ["error", "double"],
