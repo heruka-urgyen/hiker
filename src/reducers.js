@@ -65,7 +65,7 @@ export const getContents = async ({path, key}) => {
 }
 
 const getCurrentPath = resolve
-const getParentPath = path => dirname(resolve(path))
+export const getParentPath = path => dirname(resolve(path))
 export const getChildPath = path => dir => el => resolve(path, dir[el])
 
 export const getPath = ({path, dir, selected}) => {
@@ -90,6 +90,7 @@ export const getContentsFailure = createAction("GET_CONTENTS_FAILURE")
 export const getPathSuccess = createAction("GET_PATH_SUCCESS")
 export const getPathFailure = createAction("GET_PATH_FAILURE")
 export const selectItem = createAction("SELECT_ITEM")
+export const goBack = createAction("GO_BACK")
 
 const runGetContents = args => Cmd.run(getContents, {
   successActionCreator: getContentsSuccess,
@@ -97,7 +98,7 @@ const runGetContents = args => Cmd.run(getContents, {
   args,
 })
 
-const initialState = {currentSelected: 0}
+const initialState = {currentSelected: 0, childSelected: 0}
 const reducer = createReducer(initialState, {
   INIT: (s, {payload: {path}}) => loop(
     {...s, currentPath: path},
@@ -144,6 +145,19 @@ const reducer = createReducer(initialState, {
       args: [{path: s.currentPath, dir: s.currentContent, selected: currentSelected}],
     }),
   ),
+  GO_BACK: s => loop({
+    ...s,
+    currentPath: s.parentPath,
+    currentContent: s.parentContent,
+    currentSelected: s.parentSelected,
+    childPath: s.currentPath,
+    childContent: s.currentContent,
+    childSelected: s.currentSelected,
+  }, Cmd.run(getParentPath, {
+    successActionCreator: getPathSuccess,
+    failActionCreator: getPathFailure,
+    args: [{path: s.currentPath}],
+  })),
 })
 
 export default reducer
