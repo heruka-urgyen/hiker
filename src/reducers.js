@@ -1,6 +1,7 @@
 import {createAction} from "@reduxjs/toolkit"
 import {loop, Cmd} from "redux-loop"
 import fs from "fs"
+import {resolve, dirname} from "path"
 import {isBinary} from "istextorbinary"
 
 function createReducer(initialState, handlers) {
@@ -63,10 +64,9 @@ export async function getContents({path, key}) {
   return {[key]: content}
 }
 
-export const getCurrentPath = path => path
-export const getParentPath = path => fs.promises.realpath(path)
-  .then(p => p.split("/").slice(0, -1).join("/"))
-export const getChildPath = path => dir => el => `${path}/${dir[el]}`
+export const getCurrentPath = resolve
+export const getParentPath = path => dirname(resolve(path))
+export const getChildPath = path => dir => el => resolve(path, dir[el])
 
 export async function getPath({path, dir, selected}) {
   const [currentPath, childPath, parentPath] = await Promise.all([
