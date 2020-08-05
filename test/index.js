@@ -50,7 +50,6 @@ test("handle current GET_CONTENTS_SUCCESS", t => {
   t.deepEqual(r, {
     currentContent: ["file1", "dir2"],
     currentPath: "/mock/path",
-    currentContentType: "directory",
   })
 })
 
@@ -66,6 +65,21 @@ test("handle parent GET_CONTENTS_SUCCESS", t => {
     parentPath: "/mock",
     parentContent: ["path0", "path", "path1"],
     parentSelected: 1,
+  })
+})
+
+test("handle child GET_CONTENTS_SUCCESS", t => {
+  const r = reducer(
+    {currentPath: "/mock/path", currentContent: ["file1", "dir2"], parentPath: "/mock"},
+    getContentsSuccess({childContent: ["file1", "file2"], isDirectory: true}),
+  )
+
+  t.deepEqual(r, {
+    currentContent: ["file1", "dir2"],
+    currentPath: "/mock/path",
+    parentPath: "/mock",
+    childContent: ["file1", "file2"],
+    childContentType: "directory",
   })
 })
 
@@ -180,7 +194,7 @@ test("handle GO_FORWARD to dir", t => {
     currentSelected: 1,
     parentSelected: 1,
     childSelected: 0,
-    currentContentType: "directory",
+    childContentType: "directory",
   }, goForward())
 
   t.deepEqual(r, loop({
@@ -193,7 +207,7 @@ test("handle GO_FORWARD to dir", t => {
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
-    currentContentType: "directory",
+    childContentType: "directory",
   }, Cmd.run(getChildPath, {
     successActionCreator: getPathSuccess,
     failActionCreator: getPathFailure,

@@ -93,7 +93,7 @@ const open = (app, path) => new Promise((res, rej) => {
   c.on("error", rej)
 })
 
-export const openFile = async filePath => {
+export const openFile = async ({filePath}) => {
   process.stdin.pause()
 
   if (isBinary(filePath)) {
@@ -169,15 +169,15 @@ const reducer = createReducer(initialState, {
       }
     }
 
-    if (currentContent) {
+    if (childContent) {
       return {
         ...s,
-        currentContent,
-        currentContentType: isDirectory ? "directory" : "file",
+        childContent,
+        childContentType: isDirectory ? "directory" : "file",
       }
     }
 
-    return {...s, childContent}
+    return {...s, currentContent}
   },
   SELECT_ITEM: (s, {payload: {currentSelected}}) => loop(
     {...s, currentSelected},
@@ -201,7 +201,7 @@ const reducer = createReducer(initialState, {
     args: [{path: s.currentPath}],
   })),
   GO_FORWARD: s => {
-    const isDirectory = s.currentContentType === "directory"
+    const isDirectory = s.childContentType === "directory"
 
     if (isDirectory) {
       return loop({
