@@ -182,13 +182,13 @@ test("handle GO_BACK", t => {
     currentContent: ["path0", "path"],
     currentSelected: 1,
     childSelected: 0,
-    parentPath: "/mock",
+    parentPath: "/",
     parentContent: ["path0", "path"],
     parentSelected: 1,
-  }, Cmd.run(getParentPath, {
-    successActionCreator: getPathSuccess,
-    failActionCreator: getPathFailure,
-    args: [{path: "/mock"}],
+  }, Cmd.run(getContents, {
+    successActionCreator: getContentsSuccess,
+    failActionCreator: getContentsFailure,
+    args: [{path: "/", key: "parentContent"}],
   })))
 })
 

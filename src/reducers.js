@@ -199,11 +199,10 @@ const reducer = createReducer(initialState, {
     childPath: s.currentPath,
     childContent: s.currentContent,
     childSelected: s.currentSelected,
-  }, Cmd.run(getParentPath, {
-    successActionCreator: getPathSuccess,
-    failActionCreator: getPathFailure,
-    args: [{path: s.parentPath}],
-  })),
+    ...getParentPath({path: s.parentPath}),
+  }, runGetContents([{
+    path: getParentPath({path: s.parentPath}).parentPath,
+    key: "parentContent"}])),
   GO_FORWARD: s => {
     const isDirectory = s.childContentType === "directory"
 
