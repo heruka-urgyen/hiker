@@ -5,6 +5,7 @@ import reducer, {
   getContents,
   getPath,
   getChildPath,
+  getParentPath,
 
   init,
   initSuccess,
@@ -16,6 +17,7 @@ import reducer, {
   getPathFailure,
 
   selectItem,
+  goBack,
 } from "../src/reducers"
 
 test("handle INIT", t => {
@@ -126,4 +128,35 @@ test("handle SELECT_ITEM", t => {
       args: [{path: "/mock/path", dir: ["file1", "dir2"], selected: 1}],
     }),
   ))
+})
+
+test("handle GO_BACK", t => {
+  const r = reducer({
+    currentPath: "/mock/path",
+    parentPath: "/mock",
+    childPath: "/mock/path/file1",
+    currentContent: ["file1", "dir2"],
+    parentContent: ["path0", "path"],
+    childContent: ["dir1", "dir2"],
+    currentSelected: 0,
+    parentSelected: 1,
+    childSelected: 0,
+  },
+  goBack())
+
+  t.deepEqual(r, loop({
+    childPath: "/mock/path",
+    currentPath: "/mock",
+    childContent: ["file1", "dir2"],
+    currentContent: ["path0", "path"],
+    currentSelected: 1,
+    childSelected: 0,
+    parentPath: "/mock",
+    parentContent: ["path0", "path"],
+    parentSelected: 1,
+  }, Cmd.run(getParentPath, {
+    successActionCreator: getPathSuccess,
+    failActionCreator: getPathFailure,
+    args: [{path: "/mock/path"}],
+  })))
 })
