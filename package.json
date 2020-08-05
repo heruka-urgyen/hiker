@@ -20,6 +20,7 @@
     "istextorbinary": "^5.9.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
+    "react-redux": "^7.2.1",
     "redux": "^4.0.5",
     "redux-loop": "^6.0.1"
   },
