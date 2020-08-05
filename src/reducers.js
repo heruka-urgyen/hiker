@@ -14,12 +14,9 @@ function createReducer(initialState, handlers) {
   }
 }
 
-const toPromise = f => a => (
-  new Promise((res, rej) => f(a, (err, fa) => err ? rej(err) : res(fa))))
-
 export const readDir = async path => {
   try {
-    const dir = await toPromise(fs.readdir)(path)
+    const dir = await fs.promises.readdir(path)
 
     if (dir.length === 0) {
       return "(Empty)"
@@ -41,7 +38,7 @@ export const readFile = async path => {
       return "(Binary)"
     }
 
-    const file = await toPromise((p, g) => fs.readFile(p, {encoding: "utf8"}, g))(path)
+    const file = await fs.promises.readFile(path, {encoding: "utf8"})
 
     if (file.length === 0) {
       return "(Empty)"
@@ -57,7 +54,7 @@ export const readFile = async path => {
   }
 }
 
-export const getStats = toPromise(fs.stat)
+export const getStats = fs.promises.stat
 
 export async function getContents({path, key}) {
   const stats = await getStats(path)
@@ -67,7 +64,7 @@ export async function getContents({path, key}) {
 }
 
 export const getCurrentPath = path => path
-export const getParentPath = path => toPromise(fs.realpath)(path)
+export const getParentPath = path => fs.promises.realpath(path)
   .then(p => p.split("/").slice(0, -1).join("/"))
 export const getChildPath = path => dir => el => `${path}/${dir[el]}`
 
