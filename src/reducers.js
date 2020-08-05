@@ -15,7 +15,7 @@ function createReducer(initialState, handlers) {
   }
 }
 
-export const readDir = async path => {
+const readDir = async path => {
   try {
     const dir = await fs.promises.readdir(path)
 
@@ -33,7 +33,7 @@ export const readDir = async path => {
   }
 }
 
-export const readFile = async path => {
+const readFile = async path => {
   try {
     if (isBinary(path)) {
       return "(Binary)"
@@ -55,25 +55,25 @@ export const readFile = async path => {
   }
 }
 
-export const getStats = fs.promises.stat
+const getStats = fs.promises.stat
 
-export async function getContents({path, key}) {
+export const getContents = async ({path, key}) => {
   const stats = await getStats(path)
   const content = stats.isDirectory() ? await readDir(path) : await readFile(path)
 
   return {[key]: content}
 }
 
-export const getCurrentPath = resolve
-export const getParentPath = path => dirname(resolve(path))
+const getCurrentPath = resolve
+const getParentPath = path => dirname(resolve(path))
 export const getChildPath = path => dir => el => resolve(path, dir[el])
 
-export async function getPath({path, dir, selected}) {
-  const [currentPath, childPath, parentPath] = await Promise.all([
+export const getPath = ({path, dir, selected}) => {
+  const [currentPath, childPath, parentPath] = [
     getCurrentPath(path),
     getChildPath(path)(dir)(selected),
     getParentPath(path),
-  ])
+  ]
 
   return {
     currentPath,
