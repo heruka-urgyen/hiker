@@ -23,6 +23,7 @@ module.exports = {
     "object-curly-spacing": 0,
     "object-curly-newline": 0,
     "no-confusing-arrow": 0,
+    "react/jsx-filename-extension": 0,
     "operator-linebreak": ["error", "after"],
     "import/no-extraneous-dependencies": ["error", {devDependencies: true}],
     "no-unused-vars": ["error", {
