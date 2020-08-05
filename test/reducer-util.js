@@ -64,17 +64,17 @@ test("try to read binary file", async t => {
 
 test("get contents of a dir", async t => {
   const dir = await getContents({path: "/mock/dir1", key: "testKey"})
-  t.deepEqual(
-    dir,
-    {testKey: ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"]},
-  )
+  t.deepEqual(dir, {
+    isDirectory: true,
+    testKey: ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"],
+  })
 })
 
 test("get contents of a file", async t => {
   const file = await getContents({path: "/mock/dir1/text-file.txt", key: "testKey"})
   t.deepEqual(
     file,
-    {testKey: "text file content"},
+    {testKey: "text file content", isDirectory: false},
   )
 })
 
