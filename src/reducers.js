@@ -122,7 +122,13 @@ const runGetContents = args => Cmd.run(getContents, {
   args,
 })
 
-const initialState = {currentSelected: 0, childSelected: 0}
+const initialState = {
+  currentSelected: 0,
+  childSelected: 0,
+  parentContent: [],
+  currentContent: [],
+  childContent: [],
+}
 const reducer = createReducer(initialState, {
   INIT: (s, {payload: {path}}) => loop(
     {...s, currentPath: path},
