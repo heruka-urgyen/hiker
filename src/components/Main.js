@@ -72,12 +72,20 @@ const Main = () => {
   }
 
   const onHighlight = item => {
-    dispatch(selectItem({currentSelected: currentContent.content.indexOf(item.label)}))
+    dispatch(selectItem({currentSelected: currentContent.content.findIndex(
+      p => p.content === item.label,
+    )}))
   }
 
-  const mapModel = (data, path) => Array.isArray(data) ?
-    data.map(label => ({label, path, value: `${path}/${label}`})) :
-    data
+  const mapModel = ({content, type}, path) => type === "directory" ?
+    // eslint-disable-next-line
+    content.map(({content, type}) => ({
+      path,
+      type,
+      label: content,
+      value: `${path}/${content}`,
+    })) :
+    content
 
   return (
     <Layout height={10} onMoveLeft={onMoveLeft} onMoveRight={onMoveRight}>
@@ -85,7 +93,7 @@ const Main = () => {
         <Renderer
           limit={rows}
           initialIndex={parentSelected}
-          data={mapModel(parentContent.content, parentPath)}
+          data={mapModel(parentContent, parentPath)}
           w={w1}
         />
       </Pane>
@@ -95,7 +103,7 @@ const Main = () => {
           limit={rows}
           initialIndex={currentSelected}
           onHighlight={onHighlight}
-          data={mapModel(currentContent.content, currentPath)}
+          data={mapModel(currentContent, currentPath)}
           w={w2}
         />
       </Pane>
@@ -103,7 +111,7 @@ const Main = () => {
         <Renderer
           limit={rows}
           initialIndex={childSelected}
-          data={mapModel(childContent.content, childPath)}
+          data={mapModel(childContent, childPath)}
           w={w3}
         />
       </Pane>

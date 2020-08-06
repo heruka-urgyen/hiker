@@ -17,7 +17,13 @@ test.afterEach(async _ => {
 test("read directory contents", async t => {
   const dir = await getContents({path: "/mock/dir1", key: "testKey"})
   t.deepEqual(dir.testKey, {
-    content: ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"],
+    content: [
+      {content: "dir", type: "directory"},
+      {content: "empty-dir", type: "directory"},
+      {content: "empty-file.txt", type: "file"},
+      {content: "file.jpg", type: "file"},
+      {content: "text-file.txt", type: "file"},
+    ],
     type: "directory",
   })
 })
@@ -66,7 +72,13 @@ test("get contents of a dir", async t => {
   const dir = await getContents({path: "/mock/dir1", key: "testKey"})
   t.deepEqual(dir, {
     testKey: {
-      content: ["dir", "empty-dir", "empty-file.txt", "file.jpg", "text-file.txt"],
+      content: [
+        {content: "dir", type: "directory"},
+        {content: "empty-dir", type: "directory"},
+        {content: "empty-file.txt", type: "file"},
+        {content: "file.jpg", type: "file"},
+        {content: "text-file.txt", type: "file"},
+      ],
       type: "directory",
     },
   })

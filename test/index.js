@@ -36,52 +36,65 @@ test("handle INIT", t => {
 })
 
 test("handle current GET_CONTENTS_SUCCESS", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+
   const r = reducer(
     {currentPath: "/mock/path"},
-    getContentsSuccess({currentContent: {content: ["file1", "dir2"], type: "directory"}}),
+    getContentsSuccess({currentContent: {content: dir1, type: "directory"}}),
   )
 
   t.deepEqual(r, {
-    currentContent: {content: ["file1", "dir2"], type: "directory"},
+    currentContent: {content: dir1, type: "directory"},
     currentPath: "/mock/path",
   })
 })
 
 test("handle parent GET_CONTENTS_SUCCESS", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+  const dir2 = [
+    {content: "path0", type: "directory"},
+    {content: "path", type: "directory"},
+    {content: "path1", type: "directory"},
+  ]
+
   const r = reducer(
-    {currentPath: "/mock/path", currentContent: ["file1", "dir2"], parentPath: "/mock"},
+    {currentPath: "/mock/path", currentContent: dir1, parentPath: "/mock"},
     getContentsSuccess({
-      parentContent: {content: ["path0", "path", "path1"], type: "directory"},
+      parentContent: {content: dir2, type: "directory"},
     }),
   )
 
   t.deepEqual(r, {
-    currentContent: ["file1", "dir2"],
+    currentContent: dir1,
     currentPath: "/mock/path",
     parentPath: "/mock",
-    parentContent: {content: ["path0", "path", "path1"], type: "directory"},
+    parentContent: {content: dir2, type: "directory"},
     parentSelected: 1,
   })
 })
 
 test("handle child GET_CONTENTS_SUCCESS", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+
   const r = reducer(
-    {currentPath: "/mock/path", currentContent: ["file1", "dir2"], parentPath: "/mock"},
-    getContentsSuccess({childContent: {content: ["file1", "file2"], type: "directory"}}),
+    {currentPath: "/mock/path", currentContent: dir1, parentPath: "/mock"},
+    getContentsSuccess({childContent: {content: dir1, type: "directory"}}),
   )
 
   t.deepEqual(r, {
-    currentContent: ["file1", "dir2"],
+    currentContent: dir1,
     currentPath: "/mock/path",
     parentPath: "/mock",
-    childContent: {content: ["file1", "file2"], type: "directory"},
+    childContent: {content: dir1, type: "directory"},
   })
 })
 
 test("handle INIT_SUCCESS", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+
   const r = reducer({
     currentPath: "/mock/path",
-    currentContent: {content: ["file1", "dir2"], type: "directory"},
+    currentContent: {content: dir1, type: "directory"},
     currentSelected: 0},
   initSuccess())
 
@@ -89,7 +102,7 @@ test("handle INIT_SUCCESS", t => {
     childPath: "/mock/path/file1",
     parentPath: "/mock",
     currentPath: "/mock/path",
-    currentContent: {content: ["file1", "dir2"], type: "directory"},
+    currentContent: {content: dir1, type: "directory"},
     currentSelected: 0,
   }, Cmd.list([
     Cmd.run(getContents, {
@@ -106,11 +119,13 @@ test("handle INIT_SUCCESS", t => {
 })
 
 test("handle SELECT_ITEM", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+
   const r = reducer({
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: {content: ["file1", "dir2"], type: "directory"}},
+    currentContent: {content: dir1, type: "directory"}},
   selectItem({currentSelected: 1}))
 
   t.deepEqual(r, loop(
@@ -119,7 +134,7 @@ test("handle SELECT_ITEM", t => {
       parentPath: "/mock",
       childPath: "/mock/path/dir2",
       currentSelected: 1,
-      currentContent: {content: ["file1", "dir2"], type: "directory"}},
+      currentContent: {content: dir1, type: "directory"}},
     Cmd.run(getContents, {
       successActionCreator: getContentsSuccess,
       failActionCreator: getContentsFailure,
@@ -129,13 +144,17 @@ test("handle SELECT_ITEM", t => {
 })
 
 test("handle GO_BACK", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+  const dir2 = [{content: "path0", type: "directory"}, {content: "path", type: "directory"}]
+  const dir3 = [{content: "dir1", type: "directory"}, {content: "dir2", type: "directory"}]
+
   const r = reducer({
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: {content: ["file1", "dir2"], type: "directory"},
-    parentContent: {content: ["path0", "path"], type: "directory"},
-    childContent: {content: ["dir1", "dir2"], type: "directory"},
+    currentContent: {content: dir1, type: "directory"},
+    parentContent: {content: dir2, type: "directory"},
+    childContent: {content: dir3, type: "directory"},
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
@@ -144,12 +163,12 @@ test("handle GO_BACK", t => {
   t.deepEqual(r, loop({
     childPath: "/mock/path",
     currentPath: "/mock",
-    childContent: {content: ["file1", "dir2"], type: "directory"},
-    currentContent: {content: ["path0", "path"], type: "directory"},
+    childContent: {content: dir1, type: "directory"},
+    currentContent: {content: dir2, type: "directory"},
     currentSelected: 1,
     childSelected: 0,
     parentPath: "/",
-    parentContent: {content: ["path0", "path"], type: "directory"},
+    parentContent: {content: dir2, type: "directory"},
     parentSelected: 1,
   }, Cmd.run(getContents, {
     successActionCreator: getContentsSuccess,
@@ -159,13 +178,17 @@ test("handle GO_BACK", t => {
 })
 
 test("handle GO_FORWARD to dir", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+  const dir2 = [{content: "path0", type: "directory"}, {content: "path", type: "directory"}]
+  const dir3 = [{content: "dir1", type: "directory"}, {content: "dir2", type: "directory"}]
+
   const r = reducer({
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/dir1",
-    currentContent: {content: ["file1", "dir2"], type: "directory"},
-    parentContent: {content: ["path0", "path"], type: "directory"},
-    childContent: {content: ["dir1", "dir2"], type: "directory"},
+    currentContent: {content: dir1, type: "directory"},
+    parentContent: {content: dir2, type: "directory"},
+    childContent: {content: dir3, type: "directory"},
     currentSelected: 1,
     parentSelected: 1,
     childSelected: 0,
@@ -176,9 +199,9 @@ test("handle GO_FORWARD to dir", t => {
     currentPath: "/mock/path/dir1",
     parentPath: "/mock/path",
     childPath: "/mock/path/dir1/dir1",
-    currentContent: {content: ["dir1", "dir2"], type: "directory"},
-    parentContent: {content: ["file1", "dir2"], type: "directory"},
-    childContent: {content: ["dir1", "dir2"], type: "directory"},
+    currentContent: {content: dir3, type: "directory"},
+    parentContent: {content: dir1, type: "directory"},
+    childContent: {content: dir3, type: "directory"},
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
@@ -191,12 +214,15 @@ test("handle GO_FORWARD to dir", t => {
 })
 
 test("handle GO_FORWARD to file", t => {
+  const dir1 = [{content: "file1", type: "file"}, {content: "dir2", type: "directory"}]
+  const dir2 = [{content: "path0", type: "directory"}, {content: "path", type: "directory"}]
+
   const r = reducer({
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: {content: ["file1", "dir2"], type: "directory"},
-    parentContent: {content: ["path0", "path"], type: "directory"},
+    currentContent: {content: dir1, type: "directory"},
+    parentContent: {content: dir2, type: "directory"},
     childContent: {content: "file content", type: "file"},
     currentSelected: 0,
     parentSelected: 1,
@@ -207,8 +233,8 @@ test("handle GO_FORWARD to file", t => {
     currentPath: "/mock/path",
     parentPath: "/mock",
     childPath: "/mock/path/file1",
-    currentContent: {content: ["file1", "dir2"], type: "directory"},
-    parentContent: {content: ["path0", "path"], type: "directory"},
+    currentContent: {content: dir1, type: "directory"},
+    parentContent: {content: dir2, type: "directory"},
     childContent: {content: "file content", type: "file"},
     currentSelected: 0,
     parentSelected: 1,

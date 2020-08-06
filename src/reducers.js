@@ -5,6 +5,11 @@ import {spawn} from "child_process"
 import {basename, resolve, dirname} from "path"
 import {isBinary} from "istextorbinary"
 
+const isDir = async path => {
+  const stats = await fs.promises.stat(path)
+  return stats.isDirectory()
+}
+
 function createReducer(initialState, handlers) {
   return function reducer(state = initialState, action) {
     // eslint-disable-next-line
@@ -18,13 +23,17 @@ function createReducer(initialState, handlers) {
 
 const readDir = async path => {
   try {
-    const dir = await fs.promises.readdir(path)
+    const content = await fs.promises.readdir(path)
+      .then(dir => Promise.all(dir.map(p => isDir(`${path}/${p}`).then(isDirectory => ({
+        content: p,
+        type: isDirectory ? "directory" : "file",
+      })))))
 
-    if (dir.length === 0) {
+    if (content.length === 0) {
       return {type: "directory", content: "(Empty)"}
     }
 
-    return {type: "directory", content: dir}
+    return {type: "directory", content}
   } catch (e) {
     if (e.code === "EACCES") {
       return {type: "directory", content: "(Not Accessible)"}
@@ -56,11 +65,6 @@ const readFile = async path => {
   }
 }
 
-const isDir = async path => {
-  const stats = await fs.promises.stat(path)
-  return stats.isDirectory()
-}
-
 export const getContents = async ({path, key}) => {
   const isDirectory = await isDir(path)
   const content = isDirectory ? await readDir(path) : await readFile(path)
@@ -71,7 +75,7 @@ export const getContents = async ({path, key}) => {
 const getCurrentPath = path => ({currentPath: resolve(path)})
 export const getParentPath = ({path}) => ({parentPath: dirname(resolve(path))})
 export const getChildPath =
-  ({path, dir, selected}) => ({childPath: resolve(path, dir[selected])})
+  ({path, dir, selected}) => ({childPath: resolve(path, dir[selected].content)})
 
 export const getPath = ({path, dir, selected}) => {
   const [{currentPath}, {childPath}, {parentPath}] = [
@@ -125,9 +129,9 @@ const runGetContents = args => Cmd.run(getContents, {
 const initialState = {
   currentSelected: 0,
   childSelected: 0,
-  parentContent: [],
-  currentContent: [],
-  childContent: [],
+  parentContent: {content: []},
+  currentContent: {content: []},
+  childContent: {content: []},
 }
 
 const reducer = createReducer(initialState, {
@@ -162,7 +166,9 @@ const reducer = createReducer(initialState, {
       return {
         ...s,
         parentContent,
-        parentSelected: parentContent.content.indexOf(basename(s.currentPath)),
+        parentSelected: parentContent.content.findIndex(
+          p => p.content === basename(s.currentPath),
+        ),
       }
     }
 
