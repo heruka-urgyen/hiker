@@ -31,6 +31,8 @@ const getLabel = ({isFocused, label, type, size, w}) => {
   return ` ${label}${Array(Math.max(0, spaceLength)).fill(" ").join("")}${maybeFs} `
 }
 
+const getColor = ({colors, type}) => colors[type]
+
 const Renderer = props => {
   const {
     data,
@@ -39,6 +41,7 @@ const Renderer = props => {
     onSelect,
     isFocused,
     selectedItem,
+    colors,
   } = props
 
   if (Array.isArray(data)) {
@@ -52,7 +55,8 @@ const Renderer = props => {
         indicatorComponent={Text}
         ItemComponent={({label, size, type, isSelected}) => (
           <Text
-            backgroundColor={isSelected ? "red" : "none"}
+            color={isSelected ? "none" : getColor({colors, type})}
+            backgroundColor={isSelected ? colors.selection : "none"}
             wrap="truncate"
           >
             {getLabel({isFocused, label, size, w, type})}
@@ -80,6 +84,7 @@ const Main = () => {
     parentContent,
     parentSelected,
     parentPath,
+    settings,
   } = useSelector(s => s)
 
   useEffect(() => {
@@ -119,6 +124,7 @@ const Main = () => {
     <Layout height={limit} onMoveLeft={onMoveLeft} onMoveRight={onMoveRight}>
       <Pane ref={r1} key={0} width="10%">
         <Renderer
+          colors={settings.colors}
           limit={limit}
           selectedItem={parentSelected}
           data={mapModel(parentContent, parentPath)}
@@ -128,6 +134,7 @@ const Main = () => {
       <Pane ref={r2} key={1} width="40%">
         <Renderer
           isFocused
+          colors={settings.colors}
           limit={limit}
           selectedItem={currentSelected}
           onSelect={onSelect}
@@ -137,6 +144,7 @@ const Main = () => {
       </Pane>
       <Pane ref={r3} key={2} width="50%">
         <Renderer
+          colors={settings.colors}
           limit={limit}
           selectedItem={childSelected}
           data={mapModel(childContent, childPath)}
@@ -165,6 +173,7 @@ Renderer.propTypes = {
   isFocused: PropTypes.bool,
   onSelect: PropTypes.func,
   selectedItem: PropTypes.number,
+  colors: PropTypes.objectOf(PropTypes.string).isRequired,
 }
 
 export default Main

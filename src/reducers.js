@@ -157,6 +157,14 @@ const initialState = {
   parentSize: 0,
   currentSize: 0,
   childSize: 0,
+  settings: {
+    colors: {
+      selection: "#57C7FF",
+      directory: "#57C7FF",
+      file: "#E2E4E5",
+      symlink: "#FF6AC1",
+    },
+  },
 }
 
 const reducer = createReducer(initialState, {
