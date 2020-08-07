@@ -5,12 +5,12 @@ import {spawn} from "child_process"
 import {basename, resolve, dirname} from "path"
 import {isBinary} from "istextorbinary"
 
-const isDir = async path => {
-  try {
-    const stats = await fs.promises.stat(path)
-    return stats.isDirectory()
-  } catch (e) {
-    return false
+const getStats = (stat) => {
+  const isDir = stat.isDirectory()
+
+  return {
+    type: isDir ? "directory" : "file",
+    size: isDir ? "" : stat.size,
   }
 }
 
@@ -28,41 +28,47 @@ function createReducer(initialState, handlers) {
 const readDir = async path => {
   try {
     const content = await fs.promises.readdir(path)
-      .then(dir => Promise.all(dir.map(p => isDir(`${path}/${p}`).then(isDirectory => ({
+      .then(dir => Promise.all(dir.map(p => fs.promises.stat(`${path}/${p}`).then(stat => ({
         content: p,
-        type: isDirectory ? "directory" : "file",
-      }))))).then(dir => dir.sort((x, y) => x.type.localeCompare(y.type)))
+        ...getStats(stat),
+      })).catch(_ => ({content: p, type: "file", size: 0})))))
+      .then(dir => dir.sort((x, y) => x.type.localeCompare(y.type)))
 
     if (content.length === 0) {
-      return {type: "directory", content: "(Empty)"}
+      return {type: "directory", content: "(Empty)", size: ""}
     }
 
-    return {type: "directory", content}
+    return {type: "directory", content, size: ""}
   } catch (e) {
     if (e.code === "EACCES") {
-      return {type: "directory", content: "(Not Accessible)"}
+      return {type: "directory", content: "(Not Accessible)", size: ""}
     }
 
     throw e
   }
 }
 
-const readFile = async path => {
+const readFile = async (path, stat) => {
   try {
-    if (isBinary(path)) {
-      return {type: "file", content: "(Binary)"}
+    const maybeBinary = isBinary(path)
+    if (maybeBinary) {
+      return {type: "file", content: "(Binary)", size: stat.size}
+    }
+
+    if (maybeBinary == null) {
+      return {type: "file", content: "(Not Accessible)", size: 0}
     }
 
     const file = await fs.promises.readFile(path, {encoding: "utf8"})
 
     if (file.length === 0) {
-      return {type: "file", content: "(Empty)"}
+      return {type: "file", content: "(Empty)", size: 0}
     }
 
-    return {type: "file", content: file}
+    return {type: "file", content: file, size: stat.size}
   } catch (e) {
     if (e.code === "EACCES") {
-      return {type: "file", content: "(Not Accessible)"}
+      return {type: "file", content: "(Not Accessible)", size: 0}
     }
 
     throw e
@@ -70,8 +76,8 @@ const readFile = async path => {
 }
 
 export const getContents = async ({path, key}) => {
-  const isDirectory = await isDir(path)
-  const content = isDirectory ? await readDir(path) : await readFile(path)
+  const stat = await fs.promises.stat(path).catch(_ => ({isDirectory: () => false, size: 0}))
+  const content = stat.isDirectory() ? await readDir(path) : await readFile(path, stat)
 
   return {[key]: content}
 }
@@ -136,6 +142,9 @@ const initialState = {
   parentContent: {content: []},
   currentContent: {content: []},
   childContent: {content: []},
+  parentSize: 0,
+  currentSize: 0,
+  childSize: 0,
 }
 
 const reducer = createReducer(initialState, {

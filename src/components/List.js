@@ -51,12 +51,14 @@ const List = props => {
   })
 
   return (
-    <Box flexDirection="column">
+    <Box flexDirection="column" marginRight={1}>
       {state.items.map((item, i) => (
         <ItemComponent
           key={item.value}
           label={item.label}
           value={item.value}
+          size={item.size}
+          type={item.type}
           isSelected={state.selected === i}
         />
       ))}

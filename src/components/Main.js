@@ -8,6 +8,29 @@ import SelectInput from "./List"
 import {Layout, Pane} from "./Layout"
 import {selectItem, goBack, goForward} from "../reducers"
 
+// https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+const formatBytes = (bytes, decimals = 1) => {
+  if (bytes === 0) {
+    return "0"
+  }
+
+  const k = 1024
+  const dm = Math.max(0, decimals)
+  const sizes = ["B", "K", "M", "G", "T", "P", "E", "Z", "Y"]
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`
+}
+
+const getLabel = ({isFocused, label, type, size, w}) => {
+  const fs = type === "file" ? formatBytes(size) : size.toString()
+  const maybeFs = isFocused ? fs : ""
+  const extraSpace = isFocused ? fs.length + 3 : 3
+  const spaceLength = w - label.length - extraSpace
+
+  return ` ${label}${Array(Math.max(0, spaceLength)).fill(" ").join("")}${maybeFs} `
+}
+
 const Renderer = props => {
   const {
     data,
@@ -27,12 +50,12 @@ const Renderer = props => {
         items={data}
         onSelect={onSelect}
         indicatorComponent={Text}
-        ItemComponent={({label, isSelected}) => (
+        ItemComponent={({label, size, type, isSelected}) => (
           <Text
             backgroundColor={isSelected ? "red" : "none"}
             wrap="truncate"
           >
-            {` ${label}${Array(Math.max(0, w - label.length - 2)).fill(" ").join("")}`}
+            {getLabel({isFocused, label, size, w, type})}
           </Text>
         )}
       />
@@ -80,7 +103,8 @@ const Main = () => {
   const mapModel = ({content, type}, path) => (
     (type === "directory" && Array.isArray(content)) ?
       // eslint-disable-next-line
-      content.map(({content, type}) => ({
+      content.map(({content, size, type}) => ({
+        size,
         path,
         type,
         label: content,
