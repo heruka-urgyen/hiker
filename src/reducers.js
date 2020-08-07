@@ -6,8 +6,12 @@ import {basename, resolve, dirname} from "path"
 import {isBinary} from "istextorbinary"
 
 const isDir = async path => {
-  const stats = await fs.promises.stat(path)
-  return stats.isDirectory()
+  try {
+    const stats = await fs.promises.stat(path)
+    return stats.isDirectory()
+  } catch (e) {
+    return false
+  }
 }
 
 function createReducer(initialState, handlers) {
