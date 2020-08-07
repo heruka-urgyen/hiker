@@ -27,7 +27,7 @@ const readDir = async path => {
       .then(dir => Promise.all(dir.map(p => isDir(`${path}/${p}`).then(isDirectory => ({
         content: p,
         type: isDirectory ? "directory" : "file",
-      })))))
+      }))))).then(dir => dir.sort((x, y) => x.type.localeCompare(y.type)))
 
     if (content.length === 0) {
       return {type: "directory", content: "(Empty)"}
