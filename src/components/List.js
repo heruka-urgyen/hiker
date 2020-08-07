@@ -44,6 +44,21 @@ const List = props => {
   }, [timesPressed])
 
   useInput((input, key) => {
+    if (input === "G" && key.shift) {
+      setState(calculateListWindow(items, viewSize, items[items.length - 1]))
+      onSelect(items[items.length - 1])
+    }
+
+    if (input === "g") {
+      const p = timesPressed + 1
+      press(p)
+
+      if (p > 1) {
+        setState(calculateListWindow(items, viewSize, selectedItem))
+        onSelect(items[0])
+      }
+    }
+
     if (input === "j" || key.arrowDown) {
       if (state.selected !== state.items.length - 1) {
         onSelect(state.items[state.selected + 1])
