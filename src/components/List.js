@@ -59,13 +59,13 @@ const List = props => {
       }
     }
 
-    if (input === "j" || key.arrowDown) {
+    if (input === "j" || key.downArrow) {
       if (state.selected !== state.items.length - 1) {
         onSelect(state.items[state.selected + 1])
       }
     }
 
-    if (input === "k" || key.arrowUp) {
+    if (input === "k" || key.upArrow) {
       if (state.selected !== 0) {
         onSelect(state.items[state.selected - 1])
       }
