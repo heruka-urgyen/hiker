@@ -27,6 +27,7 @@ const List = props => {
   } = props
 
   const [state, setState] = useState({items, selected: selectedItem})
+  const [timesPressed, press] = useState(0)
 
   useEffect(() => {
     const t = setTimeout(() => setState(
@@ -35,6 +36,12 @@ const List = props => {
 
     return () => clearTimeout(t)
   }, [items])
+
+  useEffect(() => {
+    const t = setTimeout(() => press(0), 100)
+
+    return () => clearTimeout(t)
+  }, [timesPressed])
 
   useInput((input, key) => {
     if (input === "j" || key.arrowDown) {
