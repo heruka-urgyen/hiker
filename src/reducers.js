@@ -17,12 +17,25 @@ const getType = stat => {
   return "file"
 }
 
-const getStats = (stat) => {
-  const isDir = stat.isDirectory()
+const getSize = (stat, type, path) => {
+  if (type === "directory") {
+    // TODO: calc dir size
+    return ""
+  }
+
+  if (type === "symlink") {
+    return fs.statSync(path).size
+  }
+
+  return stat.size
+}
+
+const getStats = (stat, path) => {
+  const type = getType(stat)
 
   return {
-    type: getType(stat),
-    size: isDir ? "" : stat.size,
+    type,
+    size: getSize(stat, type, path),
   }
 }
 
@@ -42,7 +55,7 @@ const readDir = async path => {
     const content = await fs.promises.readdir(path)
       .then(dir => Promise.all(dir.map(p => fs.promises.lstat(`${path}/${p}`).then(stat => ({
         content: p,
-        ...getStats(stat),
+        ...getStats(stat, `${path}/${p}`),
       })).catch(_ => ({content: p, type: "file", size: 0})))))
       .then(dir => {
         // eslint-disable-next-line

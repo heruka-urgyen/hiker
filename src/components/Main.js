@@ -22,8 +22,20 @@ const formatBytes = (bytes, decimals = 1) => {
   return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`
 }
 
+const getSize = (type, size) => {
+  if (type === "directory") {
+    return size.toString()
+  }
+
+  if (type === "symlink") {
+    return `~> ${formatBytes(size)}`
+  }
+
+  return formatBytes(size)
+}
+
 const getLabel = ({isFocused, label, type, size, w}) => {
-  const fs = type === "file" ? formatBytes(size) : size.toString()
+  const fs = getSize(type, size)
   const maybeFs = isFocused ? fs : ""
   const extraSpace = isFocused ? fs.length + 3 : 3
   const spaceLength = w - label.length - extraSpace
