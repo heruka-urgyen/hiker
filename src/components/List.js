@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import {Box, useInput} from "ink"
 
@@ -26,30 +26,38 @@ const List = props => {
     ItemComponent,
   } = props
 
-  const listWindow = calculateListWindow(items, viewSize, selectedItem)
+  const [state, setState] = useState({items, selected: selectedItem})
+
+  useEffect(() => {
+    const t = setTimeout(() => setState(
+      calculateListWindow(items, viewSize, selectedItem),
+    ), 0)
+
+    return () => clearTimeout(t)
+  }, [items])
 
   useInput((input, key) => {
     if (input === "j" || key.arrowDown) {
-      if (selectedItem !== items.length - 1) {
-        onSelect(items.find((_, i) => selectedItem === i - 1))
+      if (state.selected !== state.items.length - 1) {
+        onSelect(state.items[state.selected + 1])
       }
     }
 
     if (input === "k" || key.arrowUp) {
-      if (selectedItem !== 0) {
-        onSelect(items.find((_, i) => selectedItem === i + 1))
+      if (state.selected !== 0) {
+        onSelect(state.items[state.selected - 1])
       }
     }
   })
 
   return (
     <Box flexDirection="column">
-      {listWindow.items.map((item, i) => (
+      {state.items.map((item, i) => (
         <ItemComponent
           key={item.value}
           label={item.label}
           value={item.value}
-          isSelected={listWindow.selected === i}
+          isSelected={state.selected === i}
         />
       ))}
     </Box>
