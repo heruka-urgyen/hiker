@@ -11,12 +11,12 @@ export const Pane = React.forwardRef(({children, ...props}, ref) => (
 ))
 
 export const Layout = ({children, onMoveLeft, onMoveRight, ...props}) => {
-  useInput((input, _) => {
-    if (input === "l") {
+  useInput((input, key) => {
+    if (input === "l" || key.rightArrow || key.return) {
       onMoveRight()
     }
 
-    if (input === "h") {
+    if (input === "h" || key.leftArrow) {
       onMoveLeft()
     }
   })
