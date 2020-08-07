@@ -44,7 +44,18 @@ const readDir = async path => {
         content: p,
         ...getStats(stat),
       })).catch(_ => ({content: p, type: "file", size: 0})))))
-      .then(dir => dir.sort((x, y) => x.type.localeCompare(y.type)))
+      .then(dir => {
+        // eslint-disable-next-line
+        const {dirs, files} = dir.reduce(({dirs, files}, x) => {
+          if (x.type === "directory") {
+            return {files, dirs: dirs.concat(x)}
+          }
+
+          return {dirs, files: files.concat(x)}
+        }, {dirs: [], files: []})
+
+        return dirs.sort().concat(files.sort())
+      })
 
     if (content.length === 0) {
       return {type: "directory", content: "(Empty)", size: ""}
