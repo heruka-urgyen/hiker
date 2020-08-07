@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {useSelector, useDispatch} from "react-redux"
 import {Text, measureElement} from "ink"
 import useStdoutDimensions from "ink-use-stdout-dimensions"
-import SelectInput from "ink-select-input"
+import SelectInput from "./List"
 
 import {Layout, Pane} from "./Layout"
 import {selectItem, goBack, goForward} from "../reducers"
@@ -13,21 +13,21 @@ const Renderer = props => {
     data,
     limit,
     w,
-    onHighlight,
+    onSelect,
     isFocused,
-    initialIndex,
+    selectedItem,
   } = props
 
   if (Array.isArray(data)) {
     return (
       <SelectInput
-        limit={limit}
-        initialIndex={initialIndex}
+        viewSize={limit}
+        selectedItem={selectedItem}
         isFocused={isFocused}
         items={data}
-        onHighlight={onHighlight}
+        onSelect={onSelect}
         indicatorComponent={Text}
-        itemComponent={({label, isSelected}) => (
+        ItemComponent={({label, isSelected}) => (
           <Text
             backgroundColor={isSelected ? "red" : "none"}
             wrap="truncate"
@@ -71,7 +71,7 @@ const Main = () => {
     dispatch(goBack())
   }
 
-  const onHighlight = item => {
+  const onSelect = item => {
     dispatch(selectItem({currentSelected: currentContent.content.findIndex(
       p => p.content === item.label,
     )}))
@@ -94,7 +94,7 @@ const Main = () => {
       <Pane ref={r1} key={0} width="10%">
         <Renderer
           limit={limit}
-          initialIndex={parentSelected}
+          selectedItem={parentSelected}
           data={mapModel(parentContent, parentPath)}
           w={w1}
         />
@@ -103,8 +103,8 @@ const Main = () => {
         <Renderer
           isFocused
           limit={limit}
-          initialIndex={currentSelected}
-          onHighlight={onHighlight}
+          selectedItem={currentSelected}
+          onSelect={onSelect}
           data={mapModel(currentContent, currentPath)}
           w={w2}
         />
@@ -112,7 +112,7 @@ const Main = () => {
       <Pane ref={r3} key={2} width="50%">
         <Renderer
           limit={limit}
-          initialIndex={childSelected}
+          selectedItem={childSelected}
           data={mapModel(childContent, childPath)}
           w={w3}
         />
@@ -124,8 +124,8 @@ const Main = () => {
 Renderer.defaultProps = {
   w: 0,
   isFocused: false,
-  initialIndex: 0,
-  onHighlight: _ => _,
+  selectedItem: 0,
+  onSelect: _ => _,
   limit: 20,
 }
 
@@ -137,8 +137,8 @@ Renderer.propTypes = {
   ]).isRequired,
   limit: PropTypes.number,
   isFocused: PropTypes.bool,
-  onHighlight: PropTypes.func,
-  initialIndex: PropTypes.number,
+  onSelect: PropTypes.func,
+  selectedItem: PropTypes.number,
 }
 
 export default Main
