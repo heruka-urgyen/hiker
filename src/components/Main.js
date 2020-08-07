@@ -87,11 +87,13 @@ const Main = () => {
     })) :
     content
 
+  const limit = rows
+
   return (
-    <Layout height={10} onMoveLeft={onMoveLeft} onMoveRight={onMoveRight}>
+    <Layout height={limit} onMoveLeft={onMoveLeft} onMoveRight={onMoveRight}>
       <Pane ref={r1} key={0} width="10%">
         <Renderer
-          limit={rows}
+          limit={limit}
           initialIndex={parentSelected}
           data={mapModel(parentContent, parentPath)}
           w={w1}
@@ -100,7 +102,7 @@ const Main = () => {
       <Pane ref={r2} key={1} width="40%">
         <Renderer
           isFocused
-          limit={rows}
+          limit={limit}
           initialIndex={currentSelected}
           onHighlight={onHighlight}
           data={mapModel(currentContent, currentPath)}
@@ -109,7 +111,7 @@ const Main = () => {
       </Pane>
       <Pane ref={r3} key={2} width="50%">
         <Renderer
-          limit={rows}
+          limit={limit}
           initialIndex={childSelected}
           data={mapModel(childContent, childPath)}
           w={w3}
