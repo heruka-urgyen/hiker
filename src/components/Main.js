@@ -77,15 +77,17 @@ const Main = () => {
     )}))
   }
 
-  const mapModel = ({content, type}, path) => type === "directory" ?
-    // eslint-disable-next-line
-    content.map(({content, type}) => ({
-      path,
-      type,
-      label: content,
-      value: `${path}/${content}`,
-    })) :
-    content
+  const mapModel = ({content, type}, path) => (
+    (type === "directory" && Array.isArray(content)) ?
+      // eslint-disable-next-line
+      content.map(({content, type}) => ({
+        path,
+        type,
+        label: content,
+        value: `${path}/${content}`,
+      })) :
+      content
+  )
 
   const limit = rows
 
