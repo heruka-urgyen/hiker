@@ -5,11 +5,23 @@ import {spawn} from "child_process"
 import {basename, resolve, dirname} from "path"
 import {isBinary} from "istextorbinary"
 
+const getType = stat => {
+  if (stat.isDirectory()) {
+    return "directory"
+  }
+
+  if (stat.isSymbolicLink()) {
+    return "symlink"
+  }
+
+  return "file"
+}
+
 const getStats = (stat) => {
   const isDir = stat.isDirectory()
 
   return {
-    type: isDir ? "directory" : "file",
+    type: getType(stat),
     size: isDir ? "" : stat.size,
   }
 }
@@ -28,7 +40,7 @@ function createReducer(initialState, handlers) {
 const readDir = async path => {
   try {
     const content = await fs.promises.readdir(path)
-      .then(dir => Promise.all(dir.map(p => fs.promises.stat(`${path}/${p}`).then(stat => ({
+      .then(dir => Promise.all(dir.map(p => fs.promises.lstat(`${path}/${p}`).then(stat => ({
         content: p,
         ...getStats(stat),
       })).catch(_ => ({content: p, type: "file", size: 0})))))
@@ -76,7 +88,7 @@ const readFile = async (path, stat) => {
 }
 
 export const getContents = async ({path, key}) => {
-  const stat = await fs.promises.stat(path).catch(_ => ({isDirectory: () => false, size: 0}))
+  const stat = await fs.promises.lstat(path).catch(_ => ({isDirectory: () => false, size: 0}))
   const content = stat.isDirectory() ? await readDir(path) : await readFile(path, stat)
 
   return {[key]: content}
