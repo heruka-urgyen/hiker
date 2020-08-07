@@ -55,6 +55,7 @@ const Renderer = props => {
         indicatorComponent={Text}
         ItemComponent={({label, size, type, isSelected}) => (
           <Text
+            bold={type === "directory"}
             color={isSelected ? "none" : getColor({colors, type})}
             backgroundColor={isSelected ? colors.selection : "none"}
             wrap="truncate"
