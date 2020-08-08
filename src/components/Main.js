@@ -47,7 +47,6 @@ const getColor = ({colors, type}) => colors[type]
 
 const mapModel = ({content, type}, path) => (
   (type === "directory" && Array.isArray(content)) ?
-    // eslint-disable-next-line
     content.map(({content, size, type}) => ({
       size,
       path,

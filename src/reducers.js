@@ -58,7 +58,6 @@ const readDir = async path => {
         ...getStats(stat, `${path}/${p}`),
       })).catch(_ => ({content: p, type: "file", size: 0})))))
       .then(dir => {
-        // eslint-disable-next-line
         const {dirs, files} = dir.reduce(({dirs, files}, x) => {
           if (x.type === "directory") {
             return {files, dirs: dirs.concat(x)}

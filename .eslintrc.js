@@ -19,6 +19,7 @@ module.exports = {
   ],
   rules: {
     semi: 0,
+    "no-shadow": 0,
     "arrow-parens": 0,
     "object-curly-spacing": 0,
     "object-curly-newline": 0,
