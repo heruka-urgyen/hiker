@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {useSelector, useDispatch} from "react-redux"
 import {Text, measureElement} from "ink"
 import useStdoutDimensions from "ink-use-stdout-dimensions"
-import SelectInput from "./List"
+import List from "./List"
 
 import {Layout, Pane} from "./Layout"
 import {selectItem, goBack, goForward} from "../reducers"
@@ -85,7 +85,7 @@ const Renderer = props => {
 
   if (Array.isArray(data)) {
     return (
-      <SelectInput
+      <List
         viewSize={limit}
         selectedItem={selectedItem}
         isFocused={isFocused}
