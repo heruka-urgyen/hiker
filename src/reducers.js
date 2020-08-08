@@ -272,6 +272,10 @@ const reducer = createReducer(initialState, {
     const isDirectory = s.childContent.type === "directory"
 
     if (isDirectory) {
+      if (!Array.isArray(s.childContent.content)) {
+        return s
+      }
+
       const {childPath} = getPath({
         path: s.childPath,
         dir: s.childContent,

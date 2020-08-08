@@ -200,7 +200,6 @@ test("handle GO_FORWARD to dir", t => {
     currentSelected: 1,
     parentSelected: 1,
     childSelected: 0,
-    childContentType: "directory",
     history: {},
   }, goForward())
 
@@ -214,7 +213,6 @@ test("handle GO_FORWARD to dir", t => {
     currentSelected: 0,
     parentSelected: 1,
     childSelected: 0,
-    childContentType: "directory",
     history: {
       "/mock": {selected: 1},
       "/mock/path": {selected: 1},
