@@ -112,12 +112,12 @@ const Renderer = props => {
 const Main = () => {
   const [r1, r2, r3] = [useRef(), useRef(), useRef()]
   const [[w1, w2, w3], setWidth] = useState([0, 0, 0])
-  const [_, rows] = useStdoutDimensions()
+  const [columns, rows] = useStdoutDimensions()
   const dispatch = useDispatch()
 
   useEffect(() => {
     setWidth([r1, r2, r3].map(r => measureElement(r.current).width))
-  }, [])
+  }, [columns])
 
   const onMoveRight = () => {
     dispatch(goForward())

@@ -79,7 +79,7 @@ const List = props => {
   })
 
   return (
-    <Box flexDirection="column" marginRight={1}>
+    <Box flexDirection="column">
       {state.items.map((item, i) => (
         <ItemComponent
           key={item.value}
