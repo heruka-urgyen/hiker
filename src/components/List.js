@@ -9,12 +9,18 @@ const calculateListWindow = (items, viewSize, selectedItem) => {
 
   const nextWindow = (viewSize / 2) - ((viewSize / 2) % 1)
 
-  if (selectedItem <= nextWindow) {
+  if (selectedItem + nextWindow >= items.length) {
+    return {items: items.slice(-viewSize), selected: viewSize - items.length + selectedItem}
+  }
+
+  if (selectedItem - nextWindow < 0) {
     return {items: items.slice(0, viewSize), selected: selectedItem}
   }
 
-  const sliced = items.length > viewSize ? items.slice(nextWindow) : items.slice(-nextWindow)
-  return calculateListWindow(sliced, viewSize, selectedItem - nextWindow)
+  return {
+    items: items.slice(selectedItem - nextWindow, selectedItem + nextWindow),
+    selected: nextWindow,
+  }
 }
 
 const List = props => {
