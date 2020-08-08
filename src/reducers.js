@@ -165,6 +165,7 @@ export const goBack = createAction("GO_BACK")
 export const goForward = createAction("GO_FORWARD")
 export const openFileSuccess = createAction("OPEN_FILE_SUCCESS")
 export const openFileFailure = createAction("OPEN_FILE_FAILURE")
+export const searchElement = createAction("SEARCH_ELEMENT")
 
 const runGetContents = args => Cmd.run(getContents, {
   successActionCreator: getContentsSuccess,
@@ -250,6 +251,18 @@ const reducer = createReducer(initialState, {
       currentSelected,
     }, runGetContents([{path: childPath, key: "childContent"}]))
   },
+  SEARCH_ELEMENT: (s, {payload: {query}}) => {
+    const currentSelected = s.currentContent.content.findIndex(
+      c => c.content.toLocaleLowerCase().indexOf(query) > -1,
+    )
+
+    if (currentSelected > -1) {
+      return loop(s, Cmd.action({type: "SELECT_ITEM", payload: {currentSelected}}))
+    }
+
+    return s
+  },
+
   GO_BACK: s => loop({
     ...s,
     currentPath: s.parentPath,

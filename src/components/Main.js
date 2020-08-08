@@ -86,7 +86,8 @@ const Renderer = props => {
   if (Array.isArray(data)) {
     return (
       <List
-        viewSize={limit}
+        marginTop={1}
+        viewSize={limit - 1}
         selectedItem={selectedItem}
         isFocused={isFocused}
         items={data}
@@ -130,7 +131,11 @@ const Main = () => {
   const limit = rows
 
   return (
-    <Layout height={limit} onMoveLeft={onMoveLeft} onMoveRight={onMoveRight}>
+    <Layout
+      height={limit}
+      onMoveLeft={onMoveLeft}
+      onMoveRight={onMoveRight}
+    >
       <Pane ref={r1} key={0} width="10%">
         <Renderer
           selector="parent"

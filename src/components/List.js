@@ -30,6 +30,7 @@ const List = props => {
     onSelect,
     selectedItem,
     ItemComponent,
+    marginTop,
   } = props
 
   const [state, setState] = useState({items, selected: selectedItem})
@@ -79,7 +80,7 @@ const List = props => {
   })
 
   return (
-    <Box flexDirection="column">
+    <Box flexDirection="column" marginTop={marginTop}>
       {state.items.map((item, i) => (
         <ItemComponent
           key={item.value}
@@ -96,6 +97,7 @@ const List = props => {
 
 List.defaultProps = {
   selectedItem: 0,
+  marginTop: 0,
 }
 
 List.propTypes = {
@@ -107,6 +109,7 @@ List.propTypes = {
   onSelect: PropTypes.func.isRequired,
   selectedItem: PropTypes.number,
   ItemComponent: PropTypes.func.isRequired,
+  marginTop: PropTypes.number,
 }
 
 export default List
