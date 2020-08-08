@@ -105,5 +105,4 @@ Layout.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
-  searchElement: PropTypes.objectOf(PropTypes.string).isRequired,
 }
