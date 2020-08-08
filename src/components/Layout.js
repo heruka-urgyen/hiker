@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
 import React from "react"
-import {Box, useInput} from "ink"
+import {Box, useInput, useApp} from "ink"
 import PropTypes from "prop-types"
 
 export const Pane = React.forwardRef(({children, ...props}, ref) => (
@@ -11,7 +11,13 @@ export const Pane = React.forwardRef(({children, ...props}, ref) => (
 ))
 
 export const Layout = ({children, onMoveLeft, onMoveRight, ...props}) => {
+  const {exit} = useApp()
+
   useInput((input, key) => {
+    if (input === "q") {
+      exit()
+    }
+
     if (input === "l" || key.rightArrow || key.return) {
       onMoveRight()
     }
