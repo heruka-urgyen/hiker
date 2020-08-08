@@ -15,7 +15,6 @@
     "@reduxjs/toolkit": "^1.4.0",
     "esm": "^3.2.25",
     "ink": "^3.0.3",
-    "ink-select-input": "^4.0.0",
     "ink-text-input": "^4.0.0",
     "ink-use-stdout-dimensions": "^1.0.5",
     "istextorbinary": "^5.9.0",
