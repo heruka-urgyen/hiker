@@ -178,9 +178,7 @@ const initialState = {
   parentContent: {content: []},
   currentContent: {content: []},
   childContent: {content: []},
-  parentSize: 0,
-  currentSize: 0,
-  childSize: 0,
+  history: {},
   settings: {
     colors: {
       selection: "#57C7FF",
@@ -233,6 +231,7 @@ const reducer = createReducer(initialState, {
       return {
         ...s,
         childContent,
+        childSelected: s.history[s.childPath] ? s.history[s.childPath].selected : 0,
       }
     }
 
@@ -260,6 +259,12 @@ const reducer = createReducer(initialState, {
     childContent: s.currentContent,
     childSelected: s.currentSelected,
     ...getParentPath({path: s.parentPath}),
+    history: {
+      ...s.history,
+      [s.parentPath]: {selected: s.parentSelected},
+      [s.currentPath]: {selected: s.currentSelected},
+      [s.childPath]: {selected: s.childSelected},
+    },
   }, runGetContents([{
     path: getParentPath({path: s.parentPath}).parentPath,
     key: "parentContent"}])),
@@ -282,6 +287,12 @@ const reducer = createReducer(initialState, {
         parentContent: s.currentContent,
         parentSelected: s.currentSelected,
         childPath,
+        history: {
+          ...s.history,
+          [s.parentPath]: {selected: s.parentSelected},
+          [s.currentPath]: {selected: s.currentSelected},
+          [s.childPath]: {selected: s.childSelected},
+        },
       }, runGetContents([{path: childPath, key: "childContent"}]))
     }
 
