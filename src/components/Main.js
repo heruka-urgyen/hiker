@@ -45,16 +45,43 @@ const getLabel = ({isFocused, label, type, size, w}) => {
 
 const getColor = ({colors, type}) => colors[type]
 
+const mapModel = ({content, type}, path) => (
+  (type === "directory" && Array.isArray(content)) ?
+    // eslint-disable-next-line
+    content.map(({content, size, type}) => ({
+      size,
+      path,
+      type,
+      label: content,
+      value: `${path}/${content}`,
+    })) :
+    content
+)
+
+const onSelect = (dispatch, content) => item => {
+  dispatch(selectItem({currentSelected: content.content.findIndex(
+    p => p.content === item.label,
+  )}))
+}
+
 const Renderer = props => {
   const {
-    data,
     limit,
     w,
-    onSelect,
     isFocused,
-    selectedItem,
-    colors,
+    selector,
   } = props
+
+  const dispatch = useDispatch()
+
+  const {colors, selectedItem, content, path} = useSelector(s => ({
+    colors: s.settings.colors,
+    selectedItem: s[`${selector}Selected`],
+    content: s[`${selector}Content`],
+    path: s[`${selector}Path`],
+  }))
+
+  const data = mapModel(content, path)
 
   if (Array.isArray(data)) {
     return (
@@ -63,7 +90,7 @@ const Renderer = props => {
         selectedItem={selectedItem}
         isFocused={isFocused}
         items={data}
-        onSelect={onSelect}
+        onSelect={selector === "current" ? onSelect(dispatch, content) : _ => _}
         indicatorComponent={Text}
         ItemComponent={({label, size, type, isSelected}) => (
           <Text
@@ -87,18 +114,6 @@ const Main = () => {
   const [[w1, w2, w3], setWidth] = useState([0, 0, 0])
   const [_, rows] = useStdoutDimensions()
   const dispatch = useDispatch()
-  const {
-    currentContent,
-    currentSelected,
-    currentPath,
-    childContent,
-    childSelected,
-    childPath,
-    parentContent,
-    parentSelected,
-    parentPath,
-    settings,
-  } = useSelector(s => s)
 
   useEffect(() => {
     setWidth([r1, r2, r3].map(r => measureElement(r.current).width))
@@ -112,55 +127,29 @@ const Main = () => {
     dispatch(goBack())
   }
 
-  const onSelect = item => {
-    dispatch(selectItem({currentSelected: currentContent.content.findIndex(
-      p => p.content === item.label,
-    )}))
-  }
-
-  const mapModel = ({content, type}, path) => (
-    (type === "directory" && Array.isArray(content)) ?
-      // eslint-disable-next-line
-      content.map(({content, size, type}) => ({
-        size,
-        path,
-        type,
-        label: content,
-        value: `${path}/${content}`,
-      })) :
-      content
-  )
-
   const limit = rows
 
   return (
     <Layout height={limit} onMoveLeft={onMoveLeft} onMoveRight={onMoveRight}>
       <Pane ref={r1} key={0} width="10%">
         <Renderer
-          colors={settings.colors}
+          selector="parent"
           limit={limit}
-          selectedItem={parentSelected}
-          data={mapModel(parentContent, parentPath)}
           w={w1}
         />
       </Pane>
       <Pane ref={r2} key={1} width="40%">
         <Renderer
           isFocused
-          colors={settings.colors}
+          selector="current"
           limit={limit}
-          selectedItem={currentSelected}
-          onSelect={onSelect}
-          data={mapModel(currentContent, currentPath)}
           w={w2}
         />
       </Pane>
       <Pane ref={r3} key={2} width="50%">
         <Renderer
-          colors={settings.colors}
+          selector="child"
           limit={limit}
-          selectedItem={childSelected}
-          data={mapModel(childContent, childPath)}
           w={w3}
         />
       </Pane>
@@ -171,22 +160,14 @@ const Main = () => {
 Renderer.defaultProps = {
   w: 0,
   isFocused: false,
-  selectedItem: 0,
-  onSelect: _ => _,
   limit: 20,
 }
 
 Renderer.propTypes = {
   w: PropTypes.number,
-  data: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.object])),
-    PropTypes.string,
-  ]).isRequired,
   limit: PropTypes.number,
   isFocused: PropTypes.bool,
-  onSelect: PropTypes.func,
-  selectedItem: PropTypes.number,
-  colors: PropTypes.objectOf(PropTypes.string).isRequired,
+  selector: PropTypes.string.isRequired,
 }
 
 export default Main
