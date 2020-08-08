@@ -106,7 +106,7 @@ const Renderer = props => {
     )
   }
 
-  return <Text key={1} wrap="truncate">{data}</Text>
+  return <Text key={1}>{data}</Text>
 }
 
 const Main = () => {
