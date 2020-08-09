@@ -6,11 +6,15 @@
 This is a tiny file manager written as a proof of concept to see how well ink would be suitable to build terminal apps of medium complexity.
 It is inspired by [ranger](https://github.com/ranger/ranger). It uses [ink](https://github.com/vadimdemedes/ink) for UI, [redux](https://github.com/reduxjs/redux) and [redux-loop](https://github.com/redux-loop/redux-loop) for state management.
 
-# Usage
-Use vi keybindings (`h, j, k, l, gg, shift+g`) and / or arrows + enter to navigate around. 
-Pressing `/` toggles search in folder. 
+# Install
+`npm install -g @heruka_urgyen/hiker`
 
-# Running locally
+# Use
+Run it as `hiker`.
+Use vi keybindings (`h`, `j`, `k`, `l`, `gg`, `shift+g`) or arrows + enter to navigate around.
+Pressing `/` toggles search in folder.
+
+# Run locally
 1. Clone this repository `https://github.com/heruka-urgyen/hiker.git`
 2. Run `npm install`
 3. Run `npm run dev` to start a dev loop that watches files for changes, builds the app, runs tests, and lints the code. Restarting the app on build is currently not possible, so it should be run manually by `npm run app` or `node dist/index.js`
