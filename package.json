@@ -1,8 +1,9 @@
 {
-  "name": "loop",
+  "name": "@heruka_urgyen/hiker",
   "version": "0.0.0",
-  "description": "",
+  "description": "fnpm install -g npm-considerile manager in react ink",
   "main": "index.js",
+  "bin": {"hiker": "cli.js"},
   "scripts": {
     "start": "npm run build && npm run app",
     "app": "node dist/index.js",
@@ -11,9 +12,13 @@
     "test": "ava --watch --verbose",
     "lint": "eslint src test .eslintrc.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["react", "ink", "terminal", "cli", "file manager"],
+  "author": "Ilya Malyanov",
+  "license": "GPL-3.0",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/heruka-urgyen/hiker"
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^1.4.0",
     "esm": "^3.2.25",
