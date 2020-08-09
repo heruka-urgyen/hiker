@@ -4,6 +4,9 @@
   "description": "fnpm install -g npm-considerile manager in react ink",
   "main": "index.js",
   "bin": {"hiker": "cli.js"},
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "npm run build && npm run app",
     "app": "node dist/index.js",
